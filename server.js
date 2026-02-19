@@ -6,36 +6,68 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔹 Supabase connection
+/* =========================
+   SUPABASE CONNECTION
+========================= */
 const supabase = createClient(
   "https://ailgygurihwgmbzxugrs.supabase.co",
   "sb_publishable_N_Drsk0j2uNXubC89iP__Q_G44AwRLl"
 );
 
-// Test route
+/* =========================
+   TEST ROUTE
+========================= */
 app.get("/", (req, res) => {
   res.send("TechRescue Backend Running with Database ✅");
 });
 
-// 🔹 Get Engineers from DB
+/* =========================
+   GET ALL ENGINEERS (DB)
+========================= */
 app.get("/engineers", async (req, res) => {
-  const { data, error } = await supabase.from("engineers").select("*");
+  try {
+    const { data, error } = await supabase
+      .from("engineers")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) return res.status(500).json(error);
-  res.json(data);
+    if (error) throw error;
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch engineers" });
+  }
 });
 
-// 🔹 Add Engineer (Register)
+/* =========================
+   ADD ENGINEER (REGISTER)
+========================= */
 app.post("/add-engineer", async (req, res) => {
-  const { name, email, skill, location } = req.body;
+  try {
+    const { name, email, skill, location } = req.body;
 
-  const { error } = await supabase
-    .from("engineers")
-    .insert([{ name, email, skill, location }]);
+    if (!name || !email) {
+      return res.status(400).json({ error: "Name and Email required" });
+    }
 
-  if (error) return res.status(500).json(error);
-  res.json({ message: "Engineer added" });
+    const { error } = await supabase
+      .from("engineers")
+      .insert([{ name, email, skill, location }]);
+
+    if (error) throw error;
+
+    res.json({ message: "Engineer added successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to add engineer" });
+  }
 });
 
-// Render port
-const PORT = process.
+/* =========================
+   RENDER PORT (IMPORTANT)
+========================= */
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log("TechRescue Server running on port " + PORT);
+});
