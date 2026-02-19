@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TechRescue - Connect with Tech Experts Worldwide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f7f9fc;
+      color: #333;
+      line-height: 1.6;
+    }
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo {
+      font-weight: 700;
+      color: #0066cc;
+      font-size: 1.3rem;
+    }
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    nav a:hover {
+      color: #0066cc;
+    }
+    nav a.button {
+      background: #0066cc;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0066cc, #3399ff);
+      color: white;
+      padding: 100px 20px 80px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      margin-bottom: 15px;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto 30px;
+    }
+    .cta {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .cta a {
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .cta .primary {
+      background: white;
+      color: #0066cc;
+    }
+    .cta .primary:hover {
+      background: #e6f0ff;
+    }
+    .cta .secondary {
+      border: 2px solid white;
+      color: white;
+    }
+    .cta .secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    section {
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    section h2 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2rem;
+      color: #222;
+    }
+    .features, .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .feature, .testimonial {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      transition: transform 0.2s ease;
+    }
+    .feature:hover, .testimonial:hover {
+      transform: translateY(-4px);
+    }
+    .feature h3, .testimonial h4 {
+      margin: 15px 0 10px;
+      font-size: 1.1rem;
+      color: #0066cc;
+    }
+    .how-it-works {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+    .how-box {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      width: 300px;
+      transition: transform 0.2s ease;
+    }
+    .how-box:hover {
+      transform: translateY(-4px);
+    }
+    footer {
+      background: #fff;
+      padding: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #777;
+      border-top: 1px solid #e0e0e0;
+      margin-top: 40px;
+    }
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🔧 TechRescue</div>
+  <nav>
+    <a href="client.html">Hire Expert</a>
+    <a href="expert.html">Join as Expert</a>
+    <a href="feature.html">Features</a>
+    <a href="howitwork.html">How It Works</a>
+    <a href="testimonial.html">Testimonials</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="Login.html">Log In</a>
+    <a href="Signup.html" class="button">Sign Up</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h1>Connect with Tech Experts Worldwide</h1>
+  <p>The global marketplace for IT professionals and clients to collaborate on projects and solve technical challenges.</p>
+  <div class="cta">
+    <a href="#" class="primary">Get Started</a>
+    <a href="#" class="secondary">Learn More</a>
+  </div>
+</div>
+
+<section>
+  <h2>Why Choose TechRescue?</h2>
+  <div class="features">
+    <div class="feature">
+      <h3>🌐 Global Expert Network</h3>
+      <p>Access thousands of verified IT professionals with specialized skills across all technology domains.</p>
+    </div>
+    <div class="feature">
+      <h3>🔒 Secure Transactions</h3>
+      <p>Our escrow payment system ensures both clients and experts are protected throughout the project lifecycle.</p>
+    </div>
+    <div class="feature">
+      <h3>⚡ Fast Response</h3>
+      <p>Get matched with qualified experts within minutes, with emergency support available 24/7.</p>
+    </div>
+    <div class="feature">
+      <h3>📈 Project Management</h3>
+      <p>Built-in tools for tracking progress, sharing files, and communicating with your expert or client.</p>
+    </div>
+    <div class="feature">
+      <h3>✅ Quality Guarantee</h3>
+      <p>All experts are vetted and rated, with a satisfaction guarantee on every project.</p>
+    </div>
+    <div class="feature">
+      <h3>💰 Flexible Pricing</h3>
+      <p>Choose between hourly rates, fixed-price projects, or subscription plans for ongoing support.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>How TechRescue Works</h2>
+  <div class="how-it-works">
+    <div class="how-box">
+      <h3>For Clients</h3>
+      <p><strong>1.</strong> Post your project and describe your requirements.</p>
+      <p><strong>2.</strong> Review expert proposals and profiles.</p>
+      <p><strong>3.</strong> Collaborate and release payment when satisfied.</p>
+    </div>
+    <div class="how-box">
+      <h3>For Experts</h3>
+      <p><strong>1.</strong> Create your profile and showcase your skills.</p>
+      <p><strong>2.</strong> Browse opportunities and submit proposals.</p>
+      <p><strong>3.</strong> Deliver quality work and grow your client base.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>What Our Users Say</h2>
+  <div class="testimonials">
+    <div class="testimonial">
+      <h4>James Miller</h4>
+      <p><em>Small Business Owner</em></p>
+      <p>"When our server crashed, TechRescue connected us with an expert who had us back online within an hour. Incredible service!"</p>
+    </div>
+    <div class="testimonial">
+      <h4>Sarah Patel</h4>
+      <p><em>Network Engineer</em></p>
+      <p>"As a freelance IT professional, TechRescue has transformed my business."</p>
+    </div
