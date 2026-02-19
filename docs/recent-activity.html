@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recent Activity - TechRescue</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Header -->
+  <header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
+    <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
+    <div class="flex items-center space-x-4">
+      <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">JD</div>
+      <span>John Doe</span>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="bg-white shadow flex space-x-4 px-6 py-2 border-b text-sm font-medium">
+    <a href="client.html" class="text-gray-600 hover:text-blue-600 py-2">Dashboard</a>
+    <a href="raise-query.html" class="text-gray-600 hover:text-blue-600 py-2">Raise Query</a>
+    <a href="align-experts.html" class="text-gray-600 hover:text-blue-600 py-2">Align Experts</a>
+    <a href="field-engineers.html" class="text-gray-600 hover:text-blue-600 py-2">Field Engineers</a>
+    <a href="query-history.html" class="text-gray-600 hover:text-blue-600 py-2">Query History</a>
+    <a href="recent-activity.html" class="text-blue-600 border-b-2 border-blue-600 py-2">Recent Activity</a>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="p-6 space-y-6">
+
+    <!-- Section Header -->
+    <section class="bg-white rounded shadow p-4">
+      <h2 class="text-lg font-semibold mb-2">Recent Activity</h2>
+      <p class="text-gray-500 text-sm">Track the latest updates on your queries and engineer actions.</p>
+    </section>
+
+    <!-- Activity Timeline -->
+    <section class="bg-white rounded shadow p-6">
+      <ul class="space-y-6 relative border-l-2 border-blue-100 pl-6">
+        <!-- Activity Item -->
+        <li class="relative">
+          <div class="absolute -left-3 top-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs">✓</div>
+          <div>
+            <p class="text-sm text-gray-700"><strong>Query #45</strong> was <span class="text-green-600 font-medium">resolved</span> by <strong>Engineer Alex</strong>.</p>
+            <p class="text-xs text-gray-400 mt-1">Today at 10:32 AM</p>
+          </div>
+        </li>
+
+        <li class="relative">
+          <div class="absolute -left-3 top-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-white text-xs">⏳</div>
+          <div>
+            <p class="text-sm text-gray-700"><strong>Query #46</strong> was marked <span class="text-yellow-600 font-medium">In Progress</span>.</p>
+            <p class="text-xs text-gray-400 mt-1">Today at 9:15 AM</p>
+          </div>
+        </li>
+
+        <li class="relative">
+          <div class="absolute -left-3 top-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">📝</div>
+          <div>
+            <p class="text-sm text-gray-700">A new query <strong>#47</strong> was <span class="text-blue-600 font-medium">created</span> by you.</p>
+            <p class="text-xs text-gray-400 mt-1">Yesterday at 5:42 PM</p>
+          </div>
+        </li>
+
+        <li class="relative">
+          <div class="absolute -left-3 top-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">⚠️</div>
+          <div>
+            <p class="text-sm text-gray-700"><strong>Query #44</strong> was <span class="text-red-600 font-medium">escalated</span> to Level 2 support.</p>
+            <p class="text-xs text-gray-400 mt-1">2 days ago at 3:20 PM</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+</body>
+</html>
