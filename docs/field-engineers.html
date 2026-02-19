@@ -117,6 +117,36 @@
           <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">View Profile</button>
         </div>
       </div>
+      <div id="engineerList"></div>
+
+<script>
+async function loadEngineers() {
+  const res = await fetch("https://techrescue.onrender.com/engineers");
+  const engineers = await res.json();
+
+  const container = document.getElementById("engineerList");
+  container.innerHTML = "";
+
+  if (engineers.length === 0) {
+    container.innerHTML = "<p>No engineers registered yet</p>";
+    return;
+  }
+
+  engineers.forEach(e => {
+    container.innerHTML += `
+      <div class="bg-white p-4 rounded shadow mb-3">
+        <h3 class="font-semibold">${e.name}</h3>
+        <p>Skill: ${e.skill}</p>
+        <p>Location: ${e.location}</p>
+        <p>Status: ${e.availability}</p>
+      </div>
+    `;
+  });
+}
+
+loadEngineers();
+</script>
+
 
     </section>
   </main>
@@ -155,3 +185,4 @@
 
 </body>
 </html>
+
