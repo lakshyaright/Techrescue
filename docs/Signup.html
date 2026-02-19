@@ -45,6 +45,41 @@
 
   <button type="submit">Register</button>
 </form>
+<script>
+document.getElementById("engineerForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const skill = document.getElementById("skill").value;
+  const location = document.getElementById("location").value;
+
+  try {
+    const res = await fetch("https://techrescue.onrender.com/add-engineer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        skill: skill,
+        location: location
+      })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("msg").innerText = "✅ Engineer Registered Successfully";
+
+    // form clear
+    document.getElementById("engineerForm").reset();
+
+  } catch (err) {
+    document.getElementById("msg").innerText = "❌ Error registering engineer";
+  }
+});
+</script>
 
 <p id="msg"></p>
 
@@ -52,4 +87,5 @@
 
 </body>
 </html>
+
 
