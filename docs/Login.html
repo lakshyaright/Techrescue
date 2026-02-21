@@ -66,7 +66,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
       localStorage.setItem("token", result.token);
 
       // Redirect to dashboard
-      window.location.href = "dashboard.html";
+      window.location.href = "Expert.html";
     } else {
       document.getElementById("msg").innerText =
         result.error || "Invalid login";
@@ -80,3 +80,4 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
 
 </body>
 </html>
+
