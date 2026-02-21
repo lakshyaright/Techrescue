@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chat</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+
+<h1 class="text-2xl font-bold mb-4">Chat</h1>
+
+<div id="chatBox" class="bg-white p-4 h-64 overflow-y-auto rounded shadow mb-3"></div>
+
+<input id="receiver" placeholder="Receiver ID" class="border p-2 mr-2">
+<input id="msg" placeholder="Type message..." class="border p-2 mr-2">
+<button onclick="sendMsg()" class="bg-blue-600 text-white px-4 py-2 rounded">Send</button>
+
+<script>
+const token = localStorage.getItem("token");
+if(!token) window.location.href="login.html";
+
+async function sendMsg(){
+  const receiver_id = document.getElementById("receiver").value;
+  const message = document.getElementById("msg").value;
+
+  const res = await fetch("https://techrescue.onrender.com/send-message",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer " + token
+    },
+    body: JSON.stringify({ receiver_id, message })
+  });
+
+  if(res.ok){
+    document.getElementById("msg").value="";
+    alert("Message sent");
+  }
+}
+</script>
+
+</body>
+</html>
