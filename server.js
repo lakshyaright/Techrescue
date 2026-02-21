@@ -289,15 +289,6 @@ app.get("/profile", async (req, res) => {
     res.status(401).json({ error: "Unauthorized" });
   }
 });
-/* =========================
-   Logout
-========================= */
-<script>
-function logout(){
-  localStorage.removeItem("token");
-  window.location.href = "login.html";
-}
-</script>
 
 /* =========================
    UPDATE PROFILE
@@ -357,8 +348,6 @@ app.post("/send-message", async (req, res) => {
 /* =========================
    RENDER PORT (IMPORTANT)
 ========================= */
-const http = require("http");
-const { Server } = require("socket.io");
 
 // create HTTP server from express
 const server = http.createServer(app);
@@ -375,19 +364,17 @@ io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("join", (userId) => {
-  socket.userId = userId;
-  socket.join("user_" + userId);
-});
+    socket.userId = userId;
+    socket.join("user_" + userId);
+  });
 
   socket.on("sendMessage", async (data) => {
     const { sender_id, receiver_id, message } = data;
 
-    // save in DB
     await supabase.from("messages").insert([
       { sender_id, receiver_id, message }
     ]);
 
-    // send live to receiver
     io.to("user_" + receiver_id).emit("newMessage", {
       sender_id,
       message,
@@ -395,20 +382,19 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("disconnect", () => {
+  // ✅ Correct disconnect inside connection
+  socket.on("disconnect", async () => {
+    if (socket.userId) {
+      await supabase
+        .from("engineers")
+        .update({ online: false })
+        .eq("id", socket.userId);
+
+      io.emit("statusChanged", { id: socket.userId, online: false });
+    }
+
     console.log("User disconnected");
   });
-});
-
-socket.on("disconnect", async () => {
-  if (socket.userId) {
-    await supabase
-      .from("engineers")
-      .update({ online: false })
-      .eq("id", socket.userId);
-
-    io.emit("statusChanged", { id: socket.userId, online: false });
-  }
 });
 
 /* =========================
