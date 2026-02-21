@@ -175,11 +175,11 @@
   <div class="main">
     <!-- Topbar -->
     <div class="topbar">
-      <div>Welcome back, John!</div>
+      <div id="welcomeText">Welcome back...</div>
       <div class="right">
         <div>🔔 <span style="color:yellow;">3</span></div>
-        <div class="avatar">JD</div>
-        <div>John Doe</div>
+          <div class="avatar" id="avatar">--</div>
+          <div id="userName">Loading...</div>
       </div>
     </div>
     <!-- Content -->
@@ -233,5 +233,46 @@
       </div>
     </div>
   </div>
+  <script>
+const token = localStorage.getItem("token");
+
+if(!token){
+  window.location.href = "login.html";
+}
+
+// Fetch logged-in user
+async function loadUser(){
+  try {
+    const res = await fetch("https://techrescue.onrender.com/me", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const user = await res.json();
+
+    if(!res.ok){
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const fullName = (user.first_name || "") + " " + (user.last_name || "");
+    const initials = (user.first_name?.[0] || "") + (user.last_name?.[0] || "");
+
+    document.getElementById("welcomeText").innerText = "Welcome back, " + fullName;
+    document.getElementById("userName").innerText = fullName + " (" + user.email + ")";
+    document.getElementById("avatar").innerText = initials.toUpperCase();
+
+  } catch(err){
+    console.log(err);
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+  }
+}
+
+loadUser();
+</script>
 </body>
 </html>
+
