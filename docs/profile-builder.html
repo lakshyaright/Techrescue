@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Engineer Profile Builder - TechRescue</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-2xl">
+
+<h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+Complete Engineer Profile
+</h2>
+
+<form id="profileForm">
+
+<!-- STEP 1 — SKILLS CATEGORY -->
+<div id="step1">
+
+<h3 class="font-semibold mb-3">Select Skill Category</h3>
+
+<div class="grid grid-cols-2 gap-2">
+
+<label><input type="checkbox" name="category" value="IT & Networking"> IT & Networking</label>
+<label><input type="checkbox" name="category" value="Web Development"> Web, Mobile & Software Dev</label>
+<label><input type="checkbox" name="category" value="Data"> Data Science & Analytics</label>
+<label><input type="checkbox" name="category" value="Design"> Design & Creative</label>
+<label><input type="checkbox" name="category" value="Support"> Admin / Customer Support</label>
+
+</div>
+
+<button type="button" onclick="next(2)" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">
+Next
+</button>
+
+</div>
+
+<!-- STEP 2 — SUB SKILLS -->
+<div id="step2" class="hidden">
+
+<h3 class="font-semibold mb-3">Select Sub Skills</h3>
+
+<label><input type="checkbox" name="subskills" value="Windows Server"> Windows Server</label><br>
+<label><input type="checkbox" name="subskills" value="Networking"> Networking</label><br>
+<label><input type="checkbox" name="subskills" value="Active Directory"> Active Directory</label><br>
+<label><input type="checkbox" name="subskills" value="Cloud / AWS"> Cloud / AWS</label><br>
+<label><input type="checkbox" name="subskills" value="Cyber Security"> Cyber Security</label>
+
+<div class="mt-4 flex justify-between">
+<button type="button" onclick="next(1)" class="text-gray-500">Back</button>
+<button type="button" onclick="next(3)" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+</div>
+
+</div>
+
+<!-- STEP 3 — MANUAL SKILLS -->
+<div id="step3" class="hidden">
+
+<h3 class="font-semibold mb-3">Add Skills (Type manually)</h3>
+
+<input type="text" id="manualSkills" placeholder="Example: Windows Server, Linux, AWS"
+class="w-full border p-2 rounded">
+
+<div class="mt-4 flex justify-between">
+<button type="button" onclick="next(2)" class="text-gray-500">Back</button>
+<button type="button" onclick="next(4)" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+</div>
+
+</div>
+
+<!-- STEP 4 — ROLE -->
+<div id="step4" class="hidden">
+
+<h3 class="font-semibold mb-3">Your Role</h3>
+
+<input type="text" id="role" placeholder="Example: L2 Server Engineer"
+class="w-full border p-2 rounded">
+
+<div class="mt-4 flex justify-between">
+<button type="button" onclick="next(3)" class="text-gray-500">Back</button>
+<button type="button" onclick="next(5)" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+</div>
+
+</div>
+
+<!-- STEP 5 — EXPERIENCE -->
+<div id="step5" class="hidden">
+
+<h3 class="font-semibold mb-3">Experience</h3>
+
+<input type="text" id="experience" placeholder="Example: 3 Years in IT Support"
+class="w-full border p-2 rounded">
+
+<div class="mt-4 flex justify-between">
+<button type="button" onclick="next(4)" class="text-gray-500">Back</button>
+<button type="button" onclick="next(6)" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+</div>
+
+</div>
+
+<!-- STEP 6 — EDUCATION -->
+<div id="step6" class="hidden">
+
+<h3 class="font-semibold mb-3">Education</h3>
+
+<input type="text" id="education" placeholder="Degree / University"
+class="w-full border p-2 rounded">
+
+<div class="mt-4 flex justify-between">
+<button type="button" onclick="next(5)" class="text-gray-500">Back</button>
+<button type="button" onclick="next(7)" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+</div>
+
+</div>
+
+<!-- STEP 7 — SUMMARY -->
+<div id="step7" class="hidden">
+
+<h3 class="font-semibold mb-3">Profile Summary</h3>
+
+<textarea id="summary" rows="4" placeholder="Describe your skills and experience..."
+class="w-full border p-2 rounded"></textarea>
+
+<div class="mt-4 flex justify-between">
+<button type="button" onclick="next(6)" class="text-gray-500">Back</button>
+<button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Submit Profile</button>
+</div>
+
+</div>
+
+</form>
+
+<p id="msg" class="text-center mt-4 font-semibold"></p>
+
+</div>
+
+<script>
+function next(step){
+  for(let i=1;i<=7;i++){
+    document.getElementById("step"+i).classList.add("hidden");
+  }
+  document.getElementById("step"+step).classList.remove("hidden");
+}
+
+document.getElementById("profileForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const categories = [...document.querySelectorAll('input[name="category"]:checked')].map(e=>e.value);
+  const subskills = [...document.querySelectorAll('input[name="subskills"]:checked')].map(e=>e.value);
+
+  const data = {
+    categories,
+    subskills,
+    manualSkills: document.getElementById("manualSkills").value,
+    role: document.getElementById("role").value,
+    experience: document.getElementById("experience").value,
+    education: document.getElementById("education").value,
+    summary: document.getElementById("summary").value
+  };
+
+  try{
+    const res = await fetch("https://techrescue.onrender.com/save-profile", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(data)
+    });
+
+    if(res.ok){
+      document.getElementById("msg").innerText = "✅ Profile Completed Successfully";
+      setTimeout(()=>{
+        window.location.href = "dashboard.html";
+      },1500);
+    } else {
+      document.getElementById("msg").innerText = "❌ Failed to save profile";
+    }
+  }catch(err){
+    document.getElementById("msg").innerText = "❌ Server error";
+  }
+});
+</script>
+
+</body>
+</html>
