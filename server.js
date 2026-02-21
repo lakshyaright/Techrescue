@@ -212,6 +212,85 @@ app.get("/me", async (req, res) => {
 });
 
 /* =========================
+   GET TICKET ALERTS
+========================= */
+
+app.get("/alerts", async (req, res) => {
+  const { data, error } = await supabase
+    .from("alerts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) return res.status(500).json({ error });
+  res.json(data);
+});
+
+/* =========================
+   GET JOBS (Logged User Only)
+========================= */
+
+app.get("/jobs", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { data, error } = await supabase
+      .from("jobs")
+      .select("*")
+      .eq("engineer_id", decoded.id);
+
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+});
+
+
+/* =========================
+   GET MESSAGES
+========================= */
+
+app.get("/messages", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("receiver_id", decoded.id);
+
+    if (error) throw error;
+    res.json(data);
+  } catch {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+});   
+
+/* =========================
+GET PROFILE
+========================= */
+
+app.get("/profile", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { data, error } = await supabase
+      .from("engineer_profiles")
+      .select("*")
+      .eq("engineer_id", decoded.id)
+      .maybeSingle();
+
+    if (error) throw error;
+    res.json(data);
+  } catch {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+});
+
+/* =========================
    RENDER PORT (IMPORTANT)
 ========================= */
 const PORT = process.env.PORT || 10000;
