@@ -1,24 +1,889 @@
-<script>
-const token = localStorage.getItem("token");
-if(!token) window.location.href="login.html";
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Ticket Alert System</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://cdn.tailwindcss.com/3.4.17" rel="stylesheet">
+  <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-async function loadAlerts(){
-  const res = await fetch("https://techrescue.onrender.com/alerts");
-  const data = await res.json();
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-  const container = document.getElementById("alertsContainer");
-  container.innerHTML = "";
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
 
-  data.forEach(alert=>{
-    container.innerHTML += `
-      <div style="background:#fff;padding:10px;margin-bottom:10px;border-radius:6px;">
-        <h4>${alert.title}</h4>
-        <p>${alert.description}</p>
+        .app-wrapper {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-status {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .status-badge.online {
+            background: #10b981;
+            border-color: #059669;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 0;
+        }
+
+        .tickets-panel {
+            flex: 0 0 40%;
+            background: white;
+            overflow-y: auto;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tickets-header {
+            padding: 20px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .tickets-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-badge {
+            background: #ef4444;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tickets-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .ticket-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticket-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #667eea;
+        }
+
+        .ticket-item.high-priority::before {
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+
+        .ticket-item.medium-priority::before {
+            background: #f59e0b;
+        }
+
+        .ticket-item.low-priority::before {
+            background: #10b981;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .ticket-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .ticket-item.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+        }
+
+        .ticket-id {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .ticket-client {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .ticket-issue {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .severity-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .severity-critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .severity-high {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .severity-medium {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .severity-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .chat-panel {
+            flex: 1;
+            background: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #9ca3af;
+            gap: 12px;
+        }
+
+        .chat-empty svg {
+            width: 60px;
+            height: 60px;
+            opacity: 0.5;
+        }
+
+        .chat-header {
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .ticket-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-accept {
+            background: #10b981;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-accept:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.engineer {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            word-wrap: break-word;
+        }
+
+        .message.client .message-content {
+            background: white;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .message.engineer .message-content {
+            background: #667eea;
+            color: white;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #9ca3af;
+            padding: 0 12px;
+        }
+
+        .chat-input-area {
+            background: white;
+            padding: 16px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            max-height: 100px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-send {
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+        }
+
+        .btn-send:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-send:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            max-width: 400px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-toast.success {
+            border-left-color: #10b981;
+        }
+
+        .notification-toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .tickets-panel {
+                flex: 0 0 35%;
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .chat-panel {
+                flex: 0 0 65%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tickets-panel {
+                flex: 0 0 30%;
+            }
+
+            .chat-panel {
+                flex: 0 0 70%;
+            }
+
+            .message-content {
+                max-width: 90%;
+            }
+
+            .header {
+                padding: 16px 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="app-wrapper">
+   <div class="header">
+    <h1><span>🎟️</span> <span>IT Ticket Alert System</span></h1>
+    <div class="header-status">
+     <div class="status-badge online"><span>● Online</span>
+     </div>
+     <div id="engineer-name-display" class="status-badge">
+      Engineer: Not Set
+     </div>
+     <div id="ticket-count" class="status-badge"><span>Open Tickets: 0</span>
+     </div>
+    </div>
+   </div>
+   <div class="container">
+    <div class="tickets-panel">
+     <div class="tickets-header">
+      <h2>Live Tickets <span class="alert-badge" id="alert-count">0</span></h2>
+     </div>
+     <div class="tickets-list" id="tickets-list">
+      <div style="padding: 40px 20px; text-align: center; color: #9ca3af;">
+       <p style="font-size: 14px;">No tickets yet. Waiting for new support requests...</p>
       </div>
-    `;
-  });
-}
-loadAlerts();
-</script>
+     </div>
+    </div>
+    <div class="chat-panel">
+     <div id="chat-empty-state" class="chat-empty">
+      <svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <div>
+       <p style="font-size: 16px; font-weight: 600;">No Ticket Selected</p>
+       <p style="font-size: 14px;">Choose a ticket to view details and chat</p>
+      </div>
+     </div>
+     <div id="chat-view" style="display: none; flex: 1; display: flex; flex-direction: column;">
+      <div class="chat-header">
+       <h3 id="chat-ticket-id">Ticket #12345</h3>
+       <div class="ticket-details">
+        <div class="detail-item"><span class="detail-label">Client</span> <span class="detail-value" id="chat-client-name">-</span>
+        </div>
+        <div class="detail-item"><span class="detail-label">Severity</span> <span class="detail-value" id="chat-severity">-</span>
+        </div>
+        <div class="detail-item"><span class="detail-label">Issue Type</span> <span class="detail-value" id="chat-issue-type">-</span>
+        </div>
+        <div class="detail-item"><span class="detail-label">Status</span> <span class="detail-value" id="chat-status">-</span>
+        </div>
+       </div>
+       <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+        <p style="font-size: 13px; color: #6b7280;"><strong>Issue Description:</strong></p>
+        <p id="chat-description" style="font-size: 13px; color: #111827; margin-top: 6px; line-height: 1.5;">-</p>
+       </div>
+       <div id="action-buttons-container" class="action-buttons" style="display: none;"><button class="btn btn-accept" id="btn-accept">✓ Accept Ticket</button> <button class="btn btn-reject" id="btn-reject">✗ Reject Ticket</button>
+       </div>
+      </div>
+      <div class="chat-messages scroll-smooth" id="chat-messages"></div>
+      <div id="chat-input-container" class="chat-input-area" style="display: none;"><textarea id="chat-input" class="chat-input" placeholder="Type your message..." rows="1"></textarea> <button class="btn-send" id="btn-send-message">Send</button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="notifications-container"></div>
+  <script>
+        let currentConfig = {
+            engineer_name: 'Engineer',
+            availability_status: 'Available'
+        };
 
-<div id="alertsContainer"></div>
+        let allTickets = [];
+        let selectedTicket = null;
+        let currentUser = 'engineer';
+
+        const defaultConfig = {
+            engineer_name: 'Engineer',
+            availability_status: 'Available'
+        };
+
+        const dataHandler = {
+            onDataChanged(data) {
+                allTickets = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                renderTickets();
+                if (selectedTicket) {
+                    const updated = allTickets.find(t => t.__backendId === selectedTicket.__backendId);
+                    if (updated) {
+                        selectedTicket = updated;
+                        renderChatPanel();
+                    }
+                }
+            }
+        };
+
+        async function initializeSDK() {
+            const dataResult = await window.dataSdk.init(dataHandler);
+            if (!dataResult.isOk) {
+                console.error('Data SDK initialization failed');
+            }
+
+            if (window.elementSdk) {
+                window.elementSdk.init({
+                    defaultConfig,
+                    onConfigChange: (config) => {
+                        currentConfig = config;
+                        document.getElementById('engineer-name-display').textContent = `Engineer: ${config.engineer_name || defaultConfig.engineer_name}`;
+                    },
+                    mapToCapabilities: (config) => ({
+                        recolorables: [],
+                        borderables: [],
+                        fontEditable: undefined,
+                        fontSizeable: undefined
+                    }),
+                    mapToEditPanelValues: (config) => new Map([
+                        ['engineer_name', config.engineer_name || defaultConfig.engineer_name],
+                        ['availability_status', config.availability_status || defaultConfig.availability_status]
+                    ])
+                });
+            }
+        }
+
+        function renderTickets() {
+            const ticketsList = document.getElementById('tickets-list');
+            const alertCount = document.getElementById('alert-count');
+            const ticketCount = document.getElementById('ticket-count');
+
+            const pendingTickets = allTickets.filter(t => t.status === 'open');
+            alertCount.textContent = pendingTickets.length;
+            ticketCount.textContent = `Open Tickets: ${allTickets.length}`;
+
+            if (allTickets.length === 0) {
+                ticketsList.innerHTML = `
+                    <div style="padding: 40px 20px; text-align: center; color: #9ca3af;">
+                        <p style="font-size: 14px;">No tickets yet. Waiting for new support requests...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            ticketsList.innerHTML = allTickets.map(ticket => {
+                const isSelected = selectedTicket && selectedTicket.__backendId === ticket.__backendId;
+                const priority = ticket.severity === 'critical' ? 'high-priority' : ticket.severity === 'high' ? 'high-priority' : ticket.severity === 'medium' ? 'medium-priority' : 'low-priority';
+                return `
+                    <div class="ticket-item ${priority} ${isSelected ? 'selected' : ''}" data-id="${ticket.__backendId}" onclick="selectTicket(this.dataset.id)">
+                        <div class="ticket-id">${ticket.ticket_id}</div>
+                        <div class="ticket-client">${ticket.client_name}</div>
+                        <div class="ticket-issue">${ticket.issue_type} - ${ticket.description.substring(0, 60)}...</div>
+                        <div class="ticket-meta">
+                            <span class="severity-badge severity-${ticket.severity}">${ticket.severity.toUpperCase()}</span>
+                            <span style="margin-left: auto;">${new Date(ticket.created_at).toLocaleTimeString()}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectTicket(ticketId) {
+            selectedTicket = allTickets.find(t => t.__backendId === ticketId);
+            renderTickets();
+            renderChatPanel();
+        }
+
+        function renderChatPanel() {
+            const chatEmptyState = document.getElementById('chat-empty-state');
+            const chatView = document.getElementById('chat-view');
+
+            if (!selectedTicket) {
+                chatEmptyState.style.display = 'flex';
+                chatView.style.display = 'none';
+                return;
+            }
+
+            chatEmptyState.style.display = 'none';
+            chatView.style.display = 'flex';
+
+            document.getElementById('chat-ticket-id').textContent = `Ticket #${selectedTicket.ticket_id}`;
+            document.getElementById('chat-client-name').textContent = selectedTicket.client_name;
+            document.getElementById('chat-severity').textContent = selectedTicket.severity.toUpperCase();
+            document.getElementById('chat-issue-type').textContent = selectedTicket.issue_type;
+            document.getElementById('chat-status').textContent = selectedTicket.status.toUpperCase();
+            document.getElementById('chat-description').textContent = selectedTicket.description;
+
+            const actionButtonsContainer = document.getElementById('action-buttons-container');
+            const chatInputContainer = document.getElementById('chat-input-container');
+
+            if (selectedTicket.status === 'open') {
+                actionButtonsContainer.style.display = 'flex';
+                chatInputContainer.style.display = 'none';
+            } else {
+                actionButtonsContainer.style.display = 'none';
+                chatInputContainer.style.display = 'flex';
+            }
+
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const chatMessagesDiv = document.getElementById('chat-messages');
+            let messages = [];
+
+            try {
+                messages = JSON.parse(selectedTicket.messages || '[]');
+            } catch (e) {
+                messages = [];
+            }
+
+            if (messages.length === 0) {
+                chatMessagesDiv.innerHTML = '<div style="text-align: center; color: #9ca3af; margin: auto;">No messages yet. Start by accepting the ticket.</div>';
+                return;
+            }
+
+            chatMessagesDiv.innerHTML = messages.map(msg => `
+                <div class="message ${msg.sender}">
+                    <div class="message-content">${msg.text}</div>
+                </div>
+            `).join('');
+
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        }
+
+        document.getElementById('btn-accept').addEventListener('click', async () => {
+            if (!selectedTicket) return;
+
+            const updatedTicket = {
+                ...selectedTicket,
+                status: 'accepted',
+                assigned_engineer: currentConfig.engineer_name || defaultConfig.engineer_name,
+                messages: JSON.stringify([])
+            };
+
+            const result = await window.dataSdk.update(updatedTicket);
+            if (result.isOk) {
+                showNotification('Ticket accepted successfully!', 'success');
+            } else {
+                showNotification('Failed to accept ticket', 'error');
+            }
+        });
+
+        document.getElementById('btn-reject').addEventListener('click', async () => {
+            if (!selectedTicket) return;
+
+            const updatedTicket = {
+                ...selectedTicket,
+                status: 'rejected'
+            };
+
+            const result = await window.dataSdk.update(updatedTicket);
+            if (result.isOk) {
+                showNotification('Ticket rejected', 'success');
+                selectedTicket = null;
+                renderChatPanel();
+            } else {
+                showNotification('Failed to reject ticket', 'error');
+            }
+        });
+
+        document.getElementById('btn-send-message').addEventListener('click', sendMessage);
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const messageText = input.value.trim();
+
+            if (!messageText || !selectedTicket) return;
+
+            let messages = [];
+            try {
+                messages = JSON.parse(selectedTicket.messages || '[]');
+            } catch (e) {
+                messages = [];
+            }
+
+            messages.push({
+                sender: 'engineer',
+                text: messageText,
+                timestamp: new Date().toISOString()
+            });
+
+            const updatedTicket = {
+                ...selectedTicket,
+                messages: JSON.stringify(messages)
+            };
+
+            input.value = '';
+            input.style.height = 'auto';
+
+            const result = await window.dataSdk.update(updatedTicket);
+            if (!result.isOk) {
+                showNotification('Failed to send message', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notifications-container');
+            const toast = document.createElement('div');
+            toast.className = `notification-toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Create sample tickets for demo
+        async function createSampleTickets() {
+            const existingCount = allTickets.length;
+            if (existingCount > 0) return;
+
+            const sampleTickets = [
+                {
+                    ticket_id: 'TK-001',
+                    client_name: 'John Smith',
+                    issue_type: 'Network Connectivity',
+                    description: 'Unable to connect to company VPN. Connection drops intermittently throughout the day.',
+                    severity: 'high',
+                    status: 'open',
+                    created_at: new Date().toISOString(),
+                    assigned_engineer: '',
+                    messages: '[]'
+                },
+                {
+                    ticket_id: 'TK-002',
+                    client_name: 'Sarah Johnson',
+                    issue_type: 'Email Issue',
+                    description: 'Outlook not syncing emails. Last sync was 2 hours ago.',
+                    severity: 'medium',
+                    status: 'open',
+                    created_at: new Date(Date.now() - 300000).toISOString(),
+                    assigned_engineer: '',
+                    messages: '[]'
+                },
+                {
+                    ticket_id: 'TK-003',
+                    client_name: 'Mike Davis',
+                    issue_type: 'Hardware Problem',
+                    description: 'Monitor display flickering. Tried different cables and power outlets.',
+                    severity: 'critical',
+                    status: 'open',
+                    created_at: new Date(Date.now() - 600000).toISOString(),
+                    assigned_engineer: '',
+                    messages: '[]'
+                }
+            ];
+
+            for (const ticket of sampleTickets) {
+                await window.dataSdk.create(ticket);
+            }
+        }
+
+        initializeSDK().then(() => {
+            createSampleTickets();
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d16c989b1ca5475',t:'MTc3MTY4MjYwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
