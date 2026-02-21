@@ -46,9 +46,7 @@ app.get("/engineers", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch engineers" });
   }
 });
-/* =========================
-   ADD ENGINEER (REGISTER)
-========================= */
+
 /* =========================
    ADD ENGINEER (REGISTER)
 ========================= */
@@ -377,8 +375,9 @@ io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("join", (userId) => {
-    socket.join("user_" + userId);
-  });
+  socket.userId = userId;
+  socket.join("user_" + userId);
+});
 
   socket.on("sendMessage", async (data) => {
     const { sender_id, receiver_id, message } = data;
@@ -399,6 +398,17 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });
+});
+
+socket.on("disconnect", async () => {
+  if (socket.userId) {
+    await supabase
+      .from("engineers")
+      .update({ online: false })
+      .eq("id", socket.userId);
+
+    io.emit("statusChanged", { id: socket.userId, online: false });
+  }
 });
 
 /* =========================
