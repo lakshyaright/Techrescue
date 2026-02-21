@@ -240,14 +240,17 @@
       </div>
     </div>
   </div>
-  <script>
+
+<script>
 const token = localStorage.getItem("token");
 
 if(!token){
-  window.location.href = "Login.html";
+  window.location.href = "login.html";
 }
 
-// Fetch logged-in user
+/* =========================
+   LOAD USER INFO
+========================= */
 async function loadUser(){
   try {
     const res = await fetch("https://techrescue.onrender.com/me", {
@@ -271,6 +274,14 @@ async function loadUser(){
     document.getElementById("userName").innerText = fullName + " (" + user.email + ")";
     document.getElementById("avatar").innerText = initials.toUpperCase();
 
+    // Load online status
+    if(user.online){
+      document.getElementById("statusToggle").checked = true;
+      document.getElementById("statusText").innerText = "Online 🟢";
+    } else {
+      document.getElementById("statusText").innerText = "Offline ⚫";
+    }
+
   } catch(err){
     console.log(err);
     localStorage.removeItem("token");
@@ -279,60 +290,10 @@ async function loadUser(){
 }
 
 loadUser();
-</script>
-
-
-const token = localStorage.getItem("token");
-if(!token) window.location.href="login.html";
-
-/* =========================
-   LOAD CURRENT STATUS
-========================= */
-async function loadMyStatus(){
-  try{
-    const res = await fetch("https://techrescue.onrender.com/me", {
-      headers:{ "Authorization":"Bearer " + token }
-    });
-
-    const user = await res.json();
-
-    if(user.online){
-      document.getElementById("statusToggle").checked = true;
-      document.getElementById("statusText").innerText = "Online 🟢";
-    } else {
-      document.getElementById("statusText").innerText = "Offline ⚫";
-    }
-
-  }catch(err){
-    console.log(err);
-  }
-}
-loadMyStatus();
-
 
 /* =========================
    TOGGLE ONLINE / OFFLINE
 ========================= */
-
-const token = localStorage.getItem("token");
-if(!token) window.location.href="Login.html";
-
-/* Load current status */
-async function loadMyStatus(){
-  const res = await fetch("https://techrescue.onrender.com/me", {
-    headers:{ "Authorization":"Bearer " + token }
-  });
-
-  const user = await res.json();
-
-  if(user.online){
-    document.getElementById("statusToggle").checked = true;
-    document.getElementById("statusText").innerText = "Online 🟢";
-  }
-}
-loadMyStatus();
-
-/* Toggle Online/Offline */
 async function toggleStatus(){
   const online = document.getElementById("statusToggle").checked;
 
@@ -348,11 +309,10 @@ async function toggleStatus(){
     body: JSON.stringify({ online })
   });
 }
-</script>
+</script>  
   
 </body>
 </html>
-
 
 
 
