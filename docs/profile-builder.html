@@ -169,7 +169,7 @@ document.getElementById("profileForm").addEventListener("submit", async function
     if(res.ok){
       document.getElementById("msg").innerText = "✅ Profile Completed Successfully";
       setTimeout(()=>{
-        window.location.href = "dashboard.html";
+        window.location.href = "Expert.html";
       },1500);
     } else {
       document.getElementById("msg").innerText = "❌ Failed to save profile";
