@@ -67,6 +67,7 @@ app.post("/add-engineer", async (req, res) => {
     if (existingUser) {
       return res.json({ status: "exists" });
     }
+     const hashedPassword = await bcrypt.hash(password, 10);
 
     // ✅ Insert new engineer
     const { error } = await supabase
@@ -76,7 +77,7 @@ app.post("/add-engineer", async (req, res) => {
           first_name,
           last_name,
           email,
-          password,
+          password: hashedPassword,
           country,
           state
         }
