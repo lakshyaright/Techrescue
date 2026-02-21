@@ -1,1 +1,91 @@
-hello wait for question 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Welcome - TechRescue</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
+
+  <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
+    Complete Your Profile
+  </h2>
+
+  <!-- STEP CONTAINER -->
+  <div id="stepContainer">
+
+    <!-- STEP 1 -->
+    <div id="step1">
+      <h3 class="font-semibold mb-3">1️⃣ What is your experience level?</h3>
+
+      <label class="block"><input type="radio" name="experience" value="Fresher"> Fresher</label>
+      <label class="block"><input type="radio" name="experience" value="Intermediate"> Intermediate Level</label>
+      <label class="block"><input type="radio" name="experience" value="Expert"> Expert</label>
+
+      <div class="mt-4 flex justify-between">
+        <button onclick="skip()" class="text-gray-500">Skip</button>
+        <button onclick="nextStep(2)" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="step2" class="hidden">
+      <h3 class="font-semibold mb-3">2️⃣ What is your goal?</h3>
+
+      <label class="block"><input type="radio" name="goal" value="Make Money"> To Make Money</label>
+      <label class="block"><input type="radio" name="goal" value="Get Experience"> Get Experience & Job</label>
+      <label class="block"><input type="radio" name="goal" value="Part Time"> Part Time Work</label>
+
+      <div class="mt-4 flex justify-between">
+        <button onclick="nextStep(1)" class="text-gray-500">Back</button>
+        <button onclick="nextStep(3)" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="step3" class="hidden">
+      <h3 class="font-semibold mb-3">3️⃣ Tell us about yourself</h3>
+
+      <button onclick="redirectProfile()" class="w-full bg-green-600 text-white py-2 rounded mb-3">
+        Fill Manually
+      </button>
+
+      <button class="w-full bg-gray-300 py-2 rounded mb-3">
+        Upload Resume (Coming Soon)
+      </button>
+
+      <button class="w-full bg-gray-300 py-2 rounded">
+        Add LinkedIn (Coming Soon)
+      </button>
+
+      <div class="mt-4">
+        <button onclick="nextStep(2)" class="text-gray-500">Back</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function nextStep(step){
+  document.getElementById("step1").classList.add("hidden");
+  document.getElementById("step2").classList.add("hidden");
+  document.getElementById("step3").classList.add("hidden");
+
+  document.getElementById("step"+step).classList.remove("hidden");
+}
+
+function skip(){
+  window.location.href = "profile-builder.html";
+}
+
+function redirectProfile(){
+  window.location.href = "profile-builder.html";
+}
+</script>
+
+</body>
+</html>
