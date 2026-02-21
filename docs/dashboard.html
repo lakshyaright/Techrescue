@@ -272,6 +272,38 @@ async function loadUser(){
     document.getElementById("userName").innerText = fullName + " (" + user.email + ")";
     document.getElementById("avatar").innerText = initials.toUpperCase();
 
+
+    /* =========================
+   LOAD DASHBOARD STATS
+========================= */
+async function loadDashboardStats(){
+  try{
+    const res = await fetch("https://techrescue.onrender.com/dashboard-stats",{
+      headers:{
+        "Authorization":"Bearer "+token
+      }
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+      document.getElementById("earnings").innerText =
+        "$" + data.totalEarnings.toFixed(2);
+
+      document.getElementById("completedJobs").innerText =
+        data.completedJobs;
+
+      document.getElementById("rating").innerText =
+        data.rating + " / 5.0 ⭐";
+    }
+
+  }catch(err){
+    console.log("Dashboard load error",err);
+  }
+}
+
+loadDashboardStats();
+
     // Load online status
     if(user.online){
       document.getElementById("statusToggle").checked = true;
