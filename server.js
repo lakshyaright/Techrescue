@@ -1,12 +1,12 @@
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 const express = require("express");
 const cors = require("cors");
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 /* =========================
    SUPABASE CONNECTION
@@ -41,27 +41,51 @@ app.get("/engineers", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch engineers" });
   }
 });
-
 /* =========================
    ADD ENGINEER (REGISTER)
 ========================= */
 app.post("/add-engineer", async (req, res) => {
   try {
-    const { name, email, skill, location } = req.body;
+    console.log("BODY =>", req.body);
 
-    if (!name || !email) {
-      return res.status(400).json({ error: "Name and Email required" });
+    const { first_name, last_name, email, password, country, state } = req.body;
+
+    // Required fields
+    if (!first_name || !email || !password) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
+    // 🔎 Check if email already exists
+    const { data: existingUser } = await supabase
+      .from("engineers")
+      .select("id")
+      .eq("email", email)
+      .single();
+
+    if (existingUser) {
+      return res.json({ status: "exists" });
+    }
+
+    // ✅ Insert new engineer
     const { error } = await supabase
       .from("engineers")
-      .insert([{ name, email, skill, location }]);
+      .insert([
+        {
+          first_name,
+          last_name,
+          email,
+          password,
+          country,
+          state
+        }
+      ]);
 
     if (error) throw error;
 
-    res.json({ message: "Engineer added successfully" });
+    res.json({ status: "success" });
+
   } catch (err) {
-    console.error(err);
+    console.error("ADD ENGINEER ERROR:", err);
     res.status(500).json({ error: "Failed to add engineer" });
   }
 });
