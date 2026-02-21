@@ -269,6 +269,36 @@ app.get("/messages", async (req, res) => {
 });   
 
 /* =========================
+   PROFILE
+========================= */
+app.get("/profile", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { data, error } = await supabase
+      .from("engineer_profiles")
+      .select("*")
+      .eq("engineer_id", decoded.id)
+      .maybeSingle();
+
+    if (error) throw error;
+    res.json(data);
+  } catch {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+});
+/* =========================
+   Logout
+========================= */
+<script>
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+}
+</script>
+
+/* =========================
    UPDATE PROFILE
 ========================= */
 app.post("/update-profile", async (req, res) => {
@@ -294,14 +324,34 @@ app.post("/update-profile", async (req, res) => {
 });
 
 /* =========================
-   Logout
+   SEND MESSAGE
 ========================= */
-<script>
-function logout(){
-  localStorage.removeItem("token");
-  window.location.href = "login.html";
-}
-</script>
+app.post("/send-message", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { receiver_id, message } = req.body;
+
+    const { error } = await supabase
+      .from("messages")
+      .insert([
+        {
+          sender_id: decoded.id,
+          receiver_id,
+          message
+        }
+      ]);
+
+    if (error) throw error;
+
+    res.json({ status: "sent" });
+
+  } catch (err) {
+    console.error("SEND MSG ERROR:", err);
+    res.status(500).json({ error: "Failed to send message" });
+  }
+});
 
 /* =========================
    RENDER PORT (IMPORTANT)
