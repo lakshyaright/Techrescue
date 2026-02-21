@@ -291,6 +291,16 @@ app.get("/profile", async (req, res) => {
 });
 
 /* =========================
+   Logout
+========================= */
+<script>
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+}
+</script>
+
+/* =========================
    RENDER PORT (IMPORTANT)
 ========================= */
 const PORT = process.env.PORT || 10000;
