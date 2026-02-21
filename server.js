@@ -416,10 +416,19 @@ socket.on("disconnect", async () => {
 ========================= */
 app.post("/update-status", async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, "techrescue_secret_key");
 
     const { online } = req.body;
+
+    if (typeof online !== "boolean") {
+      return res.status(400).json({ error: "Invalid status value" });
+    }
 
     const { error } = await supabase
       .from("engineers")
@@ -428,13 +437,18 @@ app.post("/update-status", async (req, res) => {
 
     if (error) throw error;
 
-    // broadcast to all clients
-    io.emit("statusChanged", { id: decoded.id, online });
+    // 🔴 Broadcast status change to all connected clients
+    if (typeof io !== "undefined") {
+      io.emit("statusChanged", {
+        id: decoded.id,
+        online
+      });
+    }
 
-    res.json({ status: "updated" });
+    res.json({ status: "updated", online });
 
   } catch (err) {
-    console.error(err);
+    console.error("STATUS UPDATE ERROR:", err);
     res.status(500).json({ error: "Failed to update status" });
   }
 });
