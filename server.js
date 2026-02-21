@@ -489,9 +489,9 @@ app.get("/online-engineers", async (req, res) => {
 });
 
 /* =========================
-   DASHBOARD STATS
+   FULL DASHBOARD DATA
 ========================= */
-app.get("/dashboard-stats", async (req, res) => {
+app.get("/dashboard-data", async (req, res) => {
   try {
 
     const authHeader = req.headers.authorization;
@@ -504,37 +504,55 @@ app.get("/dashboard-stats", async (req, res) => {
 
     const email = decoded.email;
 
-    // Example queries (adjust table names if needed)
-
-    const { count: completedJobs } = await supabase
+    /* ======================
+       COMPLETED JOBS
+    ====================== */
+    const { data: completedJobs } = await supabase
       .from("jobs")
-      .select("*", { count: "exact", head: true })
-      .eq("engineer_email", email)
-      .eq("status", "completed");
-
-    const { data: earningsData } = await supabase
-      .from("jobs")
-      .select("amount")
+      .select("*")
       .eq("engineer_email", email)
       .eq("status", "completed");
 
     let totalEarnings = 0;
-    earningsData?.forEach(job => {
+    completedJobs?.forEach(job => {
       totalEarnings += job.amount || 0;
     });
 
+    /* ======================
+       MONTHLY PERFORMANCE
+    ====================== */
+    const currentMonth = new Date().getMonth();
+
+    const monthlyJobs = completedJobs?.filter(job => {
+      const jobMonth = new Date(job.completed_at).getMonth();
+      return jobMonth === currentMonth;
+    });
+
+    const monthlyEarnings = monthlyJobs?.reduce((sum, job) => sum + (job.amount || 0), 0);
+
+    /* ======================
+       NEW ALERTS
+    ====================== */
+    const { data: newAlerts } = await supabase
+      .from("alerts")
+      .select("*")
+      .eq("engineer_email", email)
+      .eq("status", "new");
+
     res.json({
       totalEarnings,
-      completedJobs,
-      rating: 4.9  // later database se nikalenge
+      completedJobs: completedJobs?.length || 0,
+      monthlyEarnings: monthlyEarnings || 0,
+      newAlerts: newAlerts || [],
+      newAlertCount: newAlerts?.length || 0,
+      rating: 4.9
     });
 
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "Failed to load dashboard data" });
+    res.status(500).json({ error: "Dashboard load failed" });
   }
 });
-   
 /* =========================
    START SERVER
 ========================= */
