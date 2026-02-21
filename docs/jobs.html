@@ -1,853 +1,206 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Portal</title>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://cdn.tailwindcss.com/3.4.17" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    html, body {
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .app-wrapper {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 24px 30px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      z-index: 100;
-    }
-
-    .header h1 {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .header p {
-      font-size: 14px;
-      opacity: 0.9;
-      margin: 0;
-    }
-
-    .main-container {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-      gap: 0;
-    }
-
-    .sidebar {
-      flex: 0 0 280px;
-      background: white;
-      border-right: 1px solid #e5e7eb;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .filter-section {
-      padding: 20px;
-      border-bottom: 1px solid #f3f4f6;
-    }
-
-    .filter-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .search-box {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 16px;
-      transition: all 0.2s;
-    }
-
-    .search-box:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .filter-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 0;
-      cursor: pointer;
-    }
-
-    .filter-checkbox {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: #667eea;
-    }
-
-    .filter-label {
-      font-size: 14px;
-      color: #374151;
-      cursor: pointer;
-      user-select: none;
-      flex: 1;
-    }
-
-    .filter-count {
-      font-size: 12px;
-      color: #9ca3af;
-      font-weight: 600;
-    }
-
-    .content-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .search-bar-main {
-      background: white;
-      padding: 16px 24px;
-      border-bottom: 1px solid #e5e7eb;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .search-bar-main input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .search-bar-main input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .jobs-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 24px;
-      background: #f9fafb;
-    }
-
-    .job-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-left: 4px solid #667eea;
-    }
-
-    .job-card:hover {
-      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
-      transform: translateY(-2px);
-    }
-
-    .job-card.fresher {
-      border-left-color: #10b981;
-    }
-
-    .job-card.intermediate {
-      border-left-color: #f59e0b;
-    }
-
-    .job-card.expert {
-      border-left-color: #ef4444;
-    }
-
-    .job-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-
-    .job-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #111827;
-      margin-bottom: 4px;
-    }
-
-    .job-company {
-      font-size: 13px;
-      color: #6b7280;
-      margin-bottom: 8px;
-    }
-
-    .job-level {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .level-fresher {
-      background: #d1fae5;
-      color: #065f46;
-    }
-
-    .level-intermediate {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    .level-expert {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .job-meta {
-      display: flex;
-      gap: 16px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid #f3f4f6;
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .job-meta-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: #9ca3af;
-      gap: 12px;
-    }
-
-    .empty-state-icon {
-      font-size: 48px;
-      opacity: 0.5;
-    }
-
-    .empty-state-text {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 80vh;
-      overflow-y: auto;
-      padding: 32px;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from {
-        transform: translateY(20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #e5e7eb;
-      padding-bottom: 16px;
-    }
-
-    .modal-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 24px;
-      color: #9ca3af;
-      cursor: pointer;
-      padding: 0;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-
-    .modal-close:hover {
-      color: #111827;
-      background: #f3f4f6;
-      border-radius: 6px;
-    }
-
-    .modal-section {
-      margin-bottom: 24px;
-    }
-
-    .modal-section-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #6b7280;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .modal-section-content {
-      font-size: 14px;
-      color: #111827;
-      line-height: 1.6;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-      padding-top: 24px;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    .btn {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: #667eea;
-      color: white;
-      flex: 1;
-    }
-
-    .btn-primary:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-secondary {
-      background: #f3f4f6;
-      color: #374151;
-      flex: 1;
-    }
-
-    .btn-secondary:hover {
-      background: #e5e7eb;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: white;
-      padding: 16px 20px;
-      border-left: 4px solid #667eea;
-      border-radius: 8px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-      z-index: 2000;
-      animation: slideInRight 0.3s ease;
-    }
-
-    @keyframes slideInRight {
-      from {
-        transform: translateX(400px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    .toast.success {
-      border-left-color: #10b981;
-    }
-
-    @media (max-width: 1024px) {
-      .sidebar {
-        flex: 0 0 240px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .main-container {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        flex: 0 0 auto;
-        max-height: 30vh;
-        border-right: none;
-        border-bottom: 1px solid #e5e7eb;
-      }
-
-      .content-area {
-        flex: 1;
-      }
-
-      .header {
-        padding: 16px 20px;
-      }
-
-      .header h1 {
-        font-size: 24px;
-      }
-
-      .modal-content {
-        width: 95%;
-        padding: 24px;
-      }
-    }
-  </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
- </head>
- <body>
-  <div class="app-wrapper">
-   <div class="header">
-    <h1 id="portal-title">Job Portal</h1>
-    <p id="portal-subtitle">Find your dream job</p>
-   </div>
-   <div class="main-container"><!-- Sidebar Filters -->
-    <div class="sidebar"><!-- Search by company -->
-     <div class="filter-section">
-      <div class="filter-title">
-       Search
-      </div><input type="text" class="search-box" id="company-search" placeholder="Search by company...">
-     </div><!-- Location Filter -->
-     <div class="filter-section">
-      <div class="filter-title">
-       Location
-      </div>
-      <div class="filter-group"><label class="filter-item"> <input type="checkbox" class="filter-checkbox" data-filter="location" value="remote"> <span class="filter-label">Remote</span> <span class="filter-count" id="count-remote">0</span> </label> <label class="filter-item"> <input type="checkbox" class="filter-checkbox" data-filter="location" value="hybrid"> <span class="filter-label">Hybrid</span> <span class="filter-count" id="count-hybrid">0</span> </label> <label class="filter-item"> <input type="checkbox" class="filter-checkbox" data-filter="location" value="on-site"> <span class="filter-label">On-site</span> <span class="filter-count" id="count-on-site">0</span> </label>
-      </div>
-     </div><!-- Experience Level Filter -->
-     <div class="filter-section">
-      <div class="filter-title">
-       Experience Level
-      </div>
-      <div class="filter-group"><label class="filter-item"> <input type="checkbox" class="filter-checkbox" data-filter="experience" value="fresher"> <span class="filter-label">Fresher</span> <span class="filter-count" id="count-fresher">0</span> </label> <label class="filter-item"> <input type="checkbox" class="filter-checkbox" data-filter="experience" value="intermediate"> <span class="filter-label">Intermediate</span> <span class="filter-count" id="count-intermediate">0</span> </label> <label class="filter-item"> <input type="checkbox" class="filter-checkbox" data-filter="experience" value="expert"> <span class="filter-label">Expert</span> <span class="filter-count" id="count-expert">0</span> </label>
-      </div>
-     </div>
-    </div><!-- Main Content -->
-    <div class="content-area">
-     <div class="search-bar-main"><input type="text" id="main-search" placeholder="Search by job title, company, or description...">
-     </div>
-     <div class="jobs-container" id="jobs-container">
-      <div class="empty-state">
-       <div class="empty-state-icon">
-        💼
-       </div>
-       <div class="empty-state-text">
-        No jobs found
-       </div>
-       <div style="font-size: 13px; color: #6b7280;">
-        Try adjusting your filters
-       </div>
-      </div>
-     </div>
-    </div>
-   </div>
-  </div><!-- Job Details Modal -->
-  <div class="modal-overlay" id="job-modal">
-   <div class="modal-content">
-    <div class="modal-header">
-     <div>
-      <h2 class="modal-title" id="modal-job-title">Job Title</h2>
-      <p style="color: #6b7280; margin-top: 4px;" id="modal-company">Company</p>
-     </div><button class="modal-close" onclick="closeJobModal()">✕</button>
-    </div>
-    <div class="modal-section">
-     <div class="modal-section-title">
-      Position Details
-     </div>
-     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
-      <div>
-       <div style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">
-        Experience Level
-       </div>
-       <div id="modal-level" style="font-weight: 600; color: #111827;"></div>
-      </div>
-      <div>
-       <div style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">
-        Job Type
-       </div>
-       <div id="modal-type" style="font-weight: 600; color: #111827;"></div>
-      </div>
-      <div>
-       <div style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">
-        Location
-       </div>
-       <div id="modal-location" style="font-weight: 600; color: #111827;"></div>
-      </div>
-      <div>
-       <div style="font-size: 12px; color: #9ca3af; margin-bottom: 4px;">
-        Salary
-       </div>
-       <div id="modal-salary" style="font-weight: 600; color: #111827;"></div>
-      </div>
-     </div>
-    </div>
-    <div class="modal-section">
-     <div class="modal-section-title">
-      About This Role
-     </div>
-     <div class="modal-section-content" id="modal-description"></div>
-    </div>
-    <div class="button-group"><button class="btn btn-secondary" onclick="closeJobModal()">Close</button> <button class="btn btn-primary" id="apply-btn" onclick="applyForJob()"> ✓ Apply Now </button>
-    </div>
-   </div>
-  </div><!-- Toast Notification -->
-  <div id="toast" class="toast" style="display: none;"></div>
-  <script>
-    let allJobs = [];
-    let selectedJob = null;
-    let currentConfig = { portal_title: 'Job Portal', portal_subtitle: 'Find your dream job' };
-
-    const defaultConfig = {
-      portal_title: 'Job Portal',
-      portal_subtitle: 'Find your dream job'
-    };
-
-    const dataHandler = {
-      onDataChanged(data) {
-        allJobs = data.sort((a, b) => new Date(b.posted_at) - new Date(a.posted_at));
-        updateFilterCounts();
-        renderJobs();
-      }
-    };
-
-    async function initializeSDK() {
-      const dataResult = await window.dataSdk.init(dataHandler);
-      if (!dataResult.isOk) console.error('Data SDK init failed');
-
-      if (window.elementSdk) {
-        window.elementSdk.init({
-          defaultConfig,
-          onConfigChange: (config) => {
-            currentConfig = config;
-            document.getElementById('portal-title').textContent = config.portal_title || defaultConfig.portal_title;
-            document.getElementById('portal-subtitle').textContent = config.portal_subtitle || defaultConfig.portal_subtitle;
-          },
-          mapToCapabilities: () => ({
-            recolorables: [],
-            borderables: [],
-            fontEditable: undefined,
-            fontSizeable: undefined
-          }),
-          mapToEditPanelValues: (config) => new Map([
-            ['portal_title', config.portal_title || defaultConfig.portal_title],
-            ['portal_subtitle', config.portal_subtitle || defaultConfig.portal_subtitle]
-          ])
-        });
-      }
-
-      createSampleJobs();
-    }
-
-    function getActiveFilters() {
-      const filters = {
-        location: [],
-        experience: [],
-        company: document.getElementById('company-search').value.toLowerCase()
-      };
-
-      document.querySelectorAll('.filter-checkbox:checked').forEach(checkbox => {
-        const type = checkbox.dataset.filter;
-        filters[type].push(checkbox.value);
-      });
-
-      return filters;
-    }
-
-    function filterJobs() {
-      const filters = getActiveFilters();
-      const searchTerm = document.getElementById('main-search').value.toLowerCase();
-
-      return allJobs.filter(job => {
-        const matchesLocation = filters.location.length === 0 || filters.location.includes(job.location.toLowerCase());
-        const matchesExperience = filters.experience.length === 0 || filters.experience.includes(job.experience_level.toLowerCase());
-        const matchesCompany = !filters.company || job.company.toLowerCase().includes(filters.company);
-        const matchesSearch = !searchTerm || 
-          job.job_title.toLowerCase().includes(searchTerm) ||
-          job.company.toLowerCase().includes(searchTerm) ||
-          job.job_description.toLowerCase().includes(searchTerm);
-
-        return matchesLocation && matchesExperience && matchesCompany && matchesSearch;
-      });
-    }
-
-    function renderJobs() {
-      const filteredJobs = filterJobs();
-      const container = document.getElementById('jobs-container');
-
-      if (filteredJobs.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">🔍</div>
-            <div class="empty-state-text">No jobs found</div>
-            <div style="font-size: 13px; color: #6b7280;">Try adjusting your filters</div>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = filteredJobs.map(job => `
-        <div class="job-card ${job.experience_level.toLowerCase()}" onclick="openJobModal('${job.__backendId}')">
-          <div class="job-header">
-            <div style="flex: 1;">
-              <div class="job-title">${job.job_title}</div>
-              <div class="job-company">${job.company}</div>
-              <span class="job-level level-${job.experience_level.toLowerCase()}">${job.experience_level}</span>
-            </div>
-          </div>
-          <div class="job-meta">
-            <div class="job-meta-item">📍 ${job.location}</div>
-            <div class="job-meta-item">💼 ${job.job_type}</div>
-            <div class="job-meta-item">💰 ${job.salary}</div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function updateFilterCounts() {
-      const counts = {
-        'remote': 0,
-        'hybrid': 0,
-        'on-site': 0,
-        'fresher': 0,
-        'intermediate': 0,
-        'expert': 0
-      };
-
-      allJobs.forEach(job => {
-        const location = job.location.toLowerCase();
-        const exp = job.experience_level.toLowerCase();
-        
-        if (location === 'remote') counts.remote++;
-        else if (location === 'hybrid') counts.hybrid++;
-        else if (location === 'on-site') counts['on-site']++;
-        
-        if (exp === 'fresher') counts.fresher++;
-        else if (exp === 'intermediate') counts.intermediate++;
-        else if (exp === 'expert') counts.expert++;
-      });
-
-      Object.entries(counts).forEach(([key, value]) => {
-        const element = document.getElementById(`count-${key}`);
-        if (element) element.textContent = value;
-      });
-    }
-
-    function openJobModal(jobId) {
-      selectedJob = allJobs.find(j => j.__backendId === jobId);
-      if (!selectedJob) return;
-
-      document.getElementById('modal-job-title').textContent = selectedJob.job_title;
-      document.getElementById('modal-company').textContent = selectedJob.company;
-      document.getElementById('modal-level').textContent = selectedJob.experience_level;
-      document.getElementById('modal-type').textContent = selectedJob.job_type;
-      document.getElementById('modal-location').textContent = selectedJob.location;
-      document.getElementById('modal-salary').textContent = selectedJob.salary;
-      document.getElementById('modal-description').textContent = selectedJob.job_description;
-
-      document.getElementById('job-modal').classList.add('active');
-    }
-
-    function closeJobModal() {
-      document.getElementById('job-modal').classList.remove('active');
-      selectedJob = null;
-    }
-
-    async function applyForJob() {
-      if (!selectedJob) return;
-
-      const applyBtn = document.getElementById('apply-btn');
-      applyBtn.disabled = true;
-      applyBtn.textContent = 'Applying...';
-
-      setTimeout(() => {
-        showToast('✓ Application submitted successfully!');
-        closeJobModal();
-        applyBtn.disabled = false;
-        applyBtn.textContent = '✓ Apply Now';
-      }, 800);
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('success');
-      toast.style.display = 'block';
-
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 3000);
-    }
-
-    // Event Listeners
-    document.getElementById('main-search').addEventListener('input', renderJobs);
-    document.getElementById('company-search').addEventListener('input', renderJobs);
-
-    document.querySelectorAll('.filter-checkbox').forEach(checkbox => {
-      checkbox.addEventListener('change', renderJobs);
-    });
-
-    document.getElementById('job-modal').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('job-modal')) closeJobModal();
-    });
-
-    async function createSampleJobs() {
-      if (allJobs.length > 0) return;
-
-      const sampleJobs = [
-        {
-          job_title: 'Frontend Developer',
-          company: 'TechCorp',
-          location: 'Remote',
-          experience_level: 'Fresher',
-          salary: '$50k - $70k',
-          job_type: 'Full-time',
-          job_description: 'We are looking for a talented Frontend Developer to join our team. You will work on modern web applications using React and Vue.js. Responsibilities include developing responsive UI components, optimizing performance, and collaborating with designers.',
-          posted_at: new Date().toISOString()
-        },
-        {
-          job_title: 'Backend Engineer',
-          company: 'CloudSystems',
-          location: 'Hybrid',
-          experience_level: 'Intermediate',
-          salary: '$80k - $110k',
-          job_type: 'Full-time',
-          job_description: 'Build scalable backend services using Node.js, Python, or Java. Design and implement RESTful APIs, manage databases, and ensure system reliability. You should have 3+ years of backend development experience.',
-          posted_at: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-          job_title: 'Full Stack Developer',
-          company: 'InnovateLabs',
-          location: 'On-site',
-          experience_level: 'Intermediate',
-          salary: '$75k - $100k',
-          job_type: 'Full-time',
-          job_description: 'Join our dynamic team as a Full Stack Developer. Work with React, Node.js, and PostgreSQL. You will own features from design to deployment and collaborate with product and design teams.',
-          posted_at: new Date(Date.now() - 172800000).toISOString()
-        },
-        {
-          job_title: 'DevOps Engineer',
-          company: 'CloudSystems',
-          location: 'Remote',
-          experience_level: 'Expert',
-          salary: '$120k - $150k',
-          job_type: 'Full-time',
-          job_description: 'Lead infrastructure automation and cloud architecture initiatives. 5+ years experience with Kubernetes, Docker, AWS/GCP. Design and implement CI/CD pipelines. Shape our cloud strategy.',
-          posted_at: new Date(Date.now() - 259200000).toISOString()
-        },
-        {
-          job_title: 'Junior Developer',
-          company: 'StartupXYZ',
-          location: 'Remote',
-          experience_level: 'Fresher',
-          salary: '$40k - $60k',
-          job_type: 'Full-time',
-          job_description: 'Great opportunity to kickstart your career! We are looking for motivated developers with a willingness to learn. Work on real projects with experienced mentors.',
-          posted_at: new Date(Date.now() - 345600000).toISOString()
-        },
-        {
-          job_title: 'Senior Software Architect',
-          company: 'EnterpriseCo',
-          location: 'Hybrid',
-          experience_level: 'Expert',
-          salary: '$140k - $180k',
-          job_type: 'Full-time',
-          job_description: 'Design and oversee enterprise-scale software solutions. Lead technical strategy for microservices migration. 8+ years of experience required. Work with C-level executives on technical decisions.',
-          posted_at: new Date(Date.now() - 432000000).toISOString()
-        }
-      ];
-
-      for (const job of sampleJobs) {
-        const result = await window.dataSdk.create(job);
-        if (!result.isOk) console.error('Failed to create job');
-      }
-    }
-
-    initializeSDK();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d16e6e2e74e455c',t:'MTc3MTY4MzgxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jobs - TechRescue</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+<style>
+body{
+  margin:0;
+  font-family:'Inter',Arial,sans-serif;
+  background:#f4f6f8;
+  color:#333;
+  display:flex;
+  height:100vh;
+}
+
+/* Sidebar */
+.sidebar{
+  width:240px;
+  background:#fff;
+  border-right:1px solid #ddd;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+}
+.sidebar h2{
+  font-size:18px;
+  margin-bottom:30px;
+  color:#0066cc;
+}
+.sidebar nav ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+  flex:1;
+}
+.sidebar nav li{margin-bottom:20px;}
+.sidebar nav a{
+  text-decoration:none;
+  color:#333;
+  font-weight:500;
+  display:flex;
+  justify-content:space-between;
+}
+.sidebar nav a.active{color:#0066cc;}
+.sidebar .settings{margin-top:auto;}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;}
+
+.topbar{
+  background:#0066cc;
+  color:#fff;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.avatar{
+  background:#005bb5;
+  border-radius:50%;
+  width:35px;
+  height:35px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:bold;
+}
+
+.content{
+  padding:20px;
+  overflow-y:auto;
+}
+
+/* Job Card */
+.job-card{
+  background:#fff;
+  padding:18px;
+  border-radius:8px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom:15px;
+}
+
+.job-card h4{
+  margin:0 0 8px;
+}
+
+.job-meta{
+  font-size:13px;
+  color:#666;
+  margin-bottom:8px;
+}
+
+.status{
+  display:inline-block;
+  padding:4px 8px;
+  font-size:11px;
+  border-radius:4px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.pending{background:#fff3cd;color:#856404;}
+.inprogress{background:#d1ecf1;color:#0c5460;}
+.completed{background:#d4edda;color:#155724;}
+
+.job-actions button{
+  padding:6px 12px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:12px;
+  margin-right:6px;
+}
+
+.view{background:#ccc;}
+.start{background:#0066cc;color:#fff;}
+.complete{background:#28a745;color:#fff;}
+</style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>TechRescue</h2>
+  <nav>
+    <ul>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="jobs.html" class="active">Jobs</a></li>
+      <li><a href="messages.html">Messages</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <ul class="settings">
+      <li><a href="#">Account Settings</a></li>
+      <li><a href="#" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+<!-- Topbar -->
+<div class="topbar">
+  <div>My Jobs</div>
+  <div style="display:flex;align-items:center;gap:15px;">
+    <div class="avatar" id="avatar">--</div>
+    <div id="userName">Loading...</div>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+<div class="job-card">
+  <h4>Branch Office Router Issue</h4>
+  <div class="job-meta">Client: ABC Pvt Ltd | Location: Delhi</div>
+  <div class="status pending">Pending</div>
+  <div class="job-actions">
+    <button class="view">View</button>
+    <button class="start">Start</button>
+  </div>
+</div>
+
+<div class="job-card">
+  <h4>Office 365 Setup</h4>
+  <div class="job-meta">Client: StartupX | Remote Job</div>
+  <div class="status inprogress">In Progress</div>
+  <div class="job-actions">
+    <button class="view">View</button>
+    <button class="complete">Mark Complete</button>
+  </div>
+</div>
+
+<div class="job-card">
+  <h4>Firewall Configuration</h4>
+  <div class="job-meta">Client: SecureTech | Mumbai</div>
+  <div class="status completed">Completed</div>
+  <div class="job-actions">
+    <button class="view">View</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+if(!token){
+  window.location.href="Login.html";
+}
+
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href="Login.html";
+}
+</script>
+
+</body>
 </html>
