@@ -399,6 +399,8 @@ io.on("connection", (socket) => {
 ========================= */
 app.post("/update-status", async (req, res) => {
   try {
+    console.log("Update status body:", req.body);
+
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       return res.status(401).json({ error: "No token provided" });
@@ -418,8 +420,12 @@ app.post("/update-status", async (req, res) => {
       .update({ online })
       .eq("id", decoded.id);
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({ error: "DB update failed" });
+    }
 
+    // broadcast live
     io.emit("statusChanged", {
       id: decoded.id,
       online
@@ -432,7 +438,6 @@ app.post("/update-status", async (req, res) => {
     res.status(500).json({ error: "Failed to update status" });
   }
 });
-
 /* =========================
    GET ONLINE ENGINEERS
 ========================= */
