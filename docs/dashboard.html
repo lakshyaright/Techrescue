@@ -346,6 +346,98 @@ async function toggleStatus(){
     body: JSON.stringify({ online })
   });
 }
+
+  const token = localStorage.getItem("token");
+
+if(!token){
+  window.location.href = "Login.html";
+}
+
+/* =========================
+   LOAD USER INFO
+========================= */
+async function loadUser(){
+  try {
+    const res = await fetch("https://techrescue.onrender.com/me", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const user = await res.json();
+
+    if(!res.ok){
+      localStorage.removeItem("token");
+      window.location.href = "Login.html";
+      return;
+    }
+
+    const fullName = (user.first_name || "") + " " + (user.last_name || "");
+    const initials = (user.first_name?.[0] || "") + (user.last_name?.[0] || "");
+
+    document.getElementById("welcomeText").innerText = "Welcome back, " + fullName;
+    document.getElementById("userName").innerText = fullName + " (" + user.email + ")";
+    document.getElementById("avatar").innerText = initials.toUpperCase();
+
+  } catch(err){
+    localStorage.removeItem("token");
+    window.location.href = "Login.html";
+  }
+}
+
+loadUser();
+
+/* =========================
+   LOAD DASHBOARD DATA
+========================= */
+async function loadDashboardData(){
+  try{
+    const res = await fetch("https://techrescue.onrender.com/dashboard-data",{
+      headers:{
+        "Authorization":"Bearer "+token
+      }
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+
+      document.getElementById("earnings").innerText =
+        "$" + data.totalEarnings.toFixed(2);
+
+      document.getElementById("completedJobs").innerText =
+        data.completedJobs;
+
+      document.getElementById("rating").innerText =
+        data.rating + " / 5.0 ⭐";
+
+      document.getElementById("monthlyPerformance").innerText =
+        "$" + data.monthlyEarnings.toFixed(2);
+
+      document.getElementById("alertCount").innerText =
+        data.newAlertCount;
+
+      const container = document.getElementById("alertsContainer");
+      container.innerHTML = "";
+
+      data.newAlerts.forEach(alert => {
+        container.innerHTML += `
+          <div class="alert">
+            <h4>${alert.title}</h4>
+            <p>${alert.description}</p>
+            <small>${new Date(alert.created_at).toLocaleString()}</small>
+          </div>
+        `;
+      });
+
+    }
+
+  }catch(err){
+    console.log(err);
+  }
+}
+
+loadDashboardData();
 </script>  
   
 </body>
