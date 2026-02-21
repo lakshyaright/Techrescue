@@ -1,132 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Signup - TechRescue</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineer Signup - TechRescue</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-<div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg">
+<div class="bg-white shadow-lg rounded-xl w-full max-w-lg p-8">
 
 <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
-Create Account
+Create Engineer Account
 </h2>
 
-<!-- Role Selection -->
-<div class="mb-6 text-center">
-  <label class="mr-4">
-    <input type="radio" name="role" value="client" checked onchange="toggleForm()"> Client
-  </label>
-  <label>
-    <input type="radio" name="role" value="engineer" onchange="toggleForm()"> Engineer / Expert
-  </label>
+<form id="signupForm" class="space-y-4">
+
+<div class="grid grid-cols-2 gap-4">
+<input type="text" id="firstName" placeholder="First Name" class="w-full border rounded-lg p-2" required>
+<input type="text" id="lastName" placeholder="Last Name" class="w-full border rounded-lg p-2" required>
 </div>
 
-<!-- CLIENT FORM -->
-<form id="clientForm" class="space-y-3">
+<input type="email" id="email" placeholder="Email ID" class="w-full border rounded-lg p-2" required>
+<input type="password" id="password" placeholder="Password" class="w-full border rounded-lg p-2" required>
 
-<input type="text" id="c_name" placeholder="Full Name" required class="w-full p-2 border rounded" />
-<input type="email" id="c_email" placeholder="Email" required class="w-full p-2 border rounded" />
-<input type="password" id="c_password" placeholder="Password" required class="w-full p-2 border rounded" />
-<input type="text" id="c_company" placeholder="Company Name" class="w-full p-2 border rounded" />
-<input type="text" id="c_location" placeholder="Location" class="w-full p-2 border rounded" />
+<select id="country" class="w-full border rounded-lg p-2" required>
+<option value="">Select Country</option>
+<option>India</option>
+<option>USA</option>
+<option>UK</option>
+<option>Canada</option>
+<option>Australia</option>
+</select>
 
-<button class="w-full bg-blue-600 text-white py-2 rounded">
-Create Client Account
+<select id="state" class="w-full border rounded-lg p-2" required>
+<option value="">Select State</option>
+<option>Uttar Pradesh</option>
+<option>Delhi</option>
+<option>Haryana</option>
+<option>Maharashtra</option>
+</select>
+
+<button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+Create Account
 </button>
 
 </form>
 
-<!-- ENGINEER FORM -->
-<form id="engineerForm" class="space-y-3 hidden">
-
-<input type="text" id="e_first_name" placeholder="First Name" required class="w-full p-2 border rounded" />
-<input type="text" id="e_last_name" placeholder="Last Name" class="w-full p-2 border rounded" />
-
-<input type="email" id="e_email" placeholder="Email" required class="w-full p-2 border rounded" />
-<input type="password" id="e_password" placeholder="Password" required class="w-full p-2 border rounded" />
-
-<input type="text" id="e_mobile" placeholder="Mobile Number" class="w-full p-2 border rounded" />
-<input type="text" id="e_location" placeholder="Location" class="w-full p-2 border rounded" />
-<input type="text" id="e_skills" placeholder="Skills" class="w-full p-2 border rounded" />
-
-<button class="w-full bg-green-600 text-white py-2 rounded">
-Create Engineer Account
-</button>
-
-</form>
-
-<p id="msg" class="text-center mt-3"></p>
-
-<!-- Login link -->
-<p class="text-center text-sm mt-4">
-Already registered?
-<a href="login.html" class="text-blue-600 underline">Login / Sign in</a>
-</p>
+<p id="message" class="text-center mt-4 font-semibold"></p>
 
 </div>
 
 <script>
-function toggleForm(){
-  const role = document.querySelector('input[name="role"]:checked').value;
-  document.getElementById("clientForm").classList.toggle("hidden", role !== "client");
-  document.getElementById("engineerForm").classList.toggle("hidden", role !== "engineer");
-}
+document.getElementById("signupForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-/* =======================
-   CLIENT REGISTER
-======================= */
-document.getElementById("clientForm").addEventListener("submit", async function(e){
-  e.preventDefault();
+    let messageBox = document.getElementById("message");
 
-  const data = {
-    name: document.getElementById("c_name").value,
-    email: document.getElementById("c_email").value,
-    password: document.getElementById("c_password").value,
-    company: document.getElementById("c_company").value,
-    location: document.getElementById("c_location").value
-  };
+    const data = {
+        first_name: document.getElementById("firstName").value,
+        last_name: document.getElementById("lastName").value,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+        country: document.getElementById("country").value,
+        state: document.getElementById("state").value
+    };
 
-  document.getElementById("msg").innerText = "Client registration API connect karenge next step me";
-});
+    try {
+        const res = await fetch("https://techrescue.onrender.com/add-engineer", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
 
-/* =======================
-   ENGINEER REGISTER
-======================= */
-document.getElementById("engineerForm").addEventListener("submit", async function(e){
-  e.preventDefault();
+        const result = await res.json();
 
-  const data = {
-    first_name: document.getElementById("e_first_name").value,
-    last_name: document.getElementById("e_last_name").value,
-    email: document.getElementById("e_email").value,
-    password: document.getElementById("e_password").value,
-    mobile: document.getElementById("e_mobile").value,
-    location: document.getElementById("e_location").value,
-    skills: document.getElementById("e_skills").value,
-    status: "Active"
-  };
+        /* EMAIL ALREADY EXISTS */
+        if(result.status === "exists"){
+            messageBox.innerHTML = `
+                <span class="text-red-600">⚠️ Account already exists</span><br>
+                <a href="reset-password.html?email=${data.email}" 
+                   class="text-blue-600 underline">
+                   Reset Password
+                </a>
+            `;
+            return;
+        }
 
-  try {
-    const res = await fetch("https://techrescue.onrender.com/add-engineer", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
+        /* SUCCESS */
+        if(result.status === "success"){
+            messageBox.innerHTML =
+                '<span class="text-green-600">🎉 Congratulations! Your account is created.</span>';
 
-    const result = await res.json();
+            setTimeout(()=>{
+                window.location.href = "welcome-questions.html";
+            },1500);
+        }
 
-    if(res.ok){
-      document.getElementById("msg").innerText = "✅ Engineer Registered Successfully";
-      document.getElementById("engineerForm").reset();
-    }else{
-      document.getElementById("msg").innerText = result.error;
+        /* ERROR */
+        if(result.status === "error"){
+            messageBox.innerHTML =
+                '<span class="text-red-600">❌ Registration failed</span>';
+        }
+
+    } catch (err) {
+        messageBox.innerHTML =
+            '<span class="text-red-600">❌ Server error</span>';
     }
-
-  } catch(err){
-    document.getElementById("msg").innerText = "❌ Server error";
-  }
 });
 </script>
 
