@@ -46,6 +46,9 @@ app.get("/engineers", async (req, res) => {
 /* =========================
    ADD ENGINEER (REGISTER)
 ========================= */
+/* =========================
+   ADD ENGINEER (REGISTER)
+========================= */
 app.post("/add-engineer", async (req, res) => {
   try {
     console.log("BODY =>", req.body);
@@ -58,17 +61,20 @@ app.post("/add-engineer", async (req, res) => {
     }
 
     // 🔎 Check if email already exists
-    const { data: existingUser } = await supabase
+    const { data: existingUser, error: fetchError } = await supabase
       .from("engineers")
       .select("id")
       .eq("email", email)
-      .single();
+      .maybeSingle();   // 👈 safer than single()
+
+    if (fetchError) throw fetchError;
 
     if (existingUser) {
       return res.json({ status: "exists" });
     }
-     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 🔐 Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
     // ✅ Insert new engineer
     const { error } = await supabase
       .from("engineers")
