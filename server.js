@@ -145,6 +145,45 @@ app.post("/save-profile", async (req, res) => {
 });
 
 /* =========================
+   LOGIN
+========================= */
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const { data: user, error } = await supabase
+      .from("engineers")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    if (!validPassword) {
+      return res.status(400).json({ error: "Invalid password" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      "techrescue_secret_key",
+      { expiresIn: "1d" }
+    );
+
+    res.json({ status: "success", token });
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
+
+/* =========================
    RENDER PORT (IMPORTANT)
 ========================= */
 const PORT = process.env.PORT || 10000;
