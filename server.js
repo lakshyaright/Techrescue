@@ -269,24 +269,27 @@ app.get("/messages", async (req, res) => {
 });   
 
 /* =========================
-GET PROFILE
+   UPDATE PROFILE
 ========================= */
-
-app.get("/profile", async (req, res) => {
+app.post("/update-profile", async (req, res) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, "techrescue_secret_key");
 
-    const { data, error } = await supabase
+    const { role, experience, summary } = req.body;
+
+    const { error } = await supabase
       .from("engineer_profiles")
-      .select("*")
-      .eq("engineer_id", decoded.id)
-      .maybeSingle();
+      .update({ role, experience, summary })
+      .eq("engineer_id", decoded.id);
 
     if (error) throw error;
-    res.json(data);
-  } catch {
-    res.status(401).json({ error: "Unauthorized" });
+
+    res.json({ status: "success" });
+
+  } catch (err) {
+    console.error("UPDATE PROFILE ERROR:", err);
+    res.status(500).json({ error: "Failed to update profile" });
   }
 });
 
