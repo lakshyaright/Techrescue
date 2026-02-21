@@ -1,229 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Engineer Signup - TechRescue</title>
-<script src="https://cdn.tailwindcss.com"></script>
+  <title>Signup - TechRescue</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-<div class="bg-white shadow-lg rounded-xl w-full max-w-lg p-8">
+<div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg">
 
 <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
-Create Engineer Account
+Create Account
 </h2>
 
-<form id="signupForm" class="space-y-4">
-
-<div class="grid grid-cols-2 gap-4">
-<input type="text" id="firstName" placeholder="First Name"
-class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" required>
-
-<input type="text" id="lastName" placeholder="Last Name"
-class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" required>
+<!-- Role Selection -->
+<div class="mb-6 text-center">
+  <label class="mr-4">
+    <input type="radio" name="role" value="client" checked onchange="toggleForm()"> Client
+  </label>
+  <label>
+    <input type="radio" name="role" value="engineer" onchange="toggleForm()"> Engineer / Expert
+  </label>
 </div>
 
-<input type="email" id="email" placeholder="Email ID"
-class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" required>
+<!-- CLIENT FORM -->
+<form id="clientForm" class="space-y-3">
 
-<input type="password" id="password" placeholder="Password"
-class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" required>
+<input type="text" id="c_name" placeholder="Full Name" required class="w-full p-2 border rounded" />
+<input type="email" id="c_email" placeholder="Email" required class="w-full p-2 border rounded" />
+<input type="password" id="c_password" placeholder="Password" required class="w-full p-2 border rounded" />
+<input type="text" id="c_company" placeholder="Company Name" class="w-full p-2 border rounded" />
+<input type="text" id="c_location" placeholder="Location" class="w-full p-2 border rounded" />
 
-<select id="country"
-class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" required>
-<option value="">Select Country</option>
-<option>India</option> 
-<option>USA</option> 
-<option>UK</option> 
-<option>Canada</option> 
-<option>China</option>
-<option>Japan</option> 
-<option>Germany</option> 
-<option>France</option> 
-<option>Italy</option> 
-<option>Russia</option> <option>Brazil</option> <option>Australia</option> <option>South Korea</option> <option>Mexico</option> <option>South Africa</option> <option>Saudi Arabia</option>
-</select>
-
-<select id="state"
-class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-400" required>
-<option value="">Select State</option>
- <optgroup label="India">
-    <option>Uttar Pradesh</option>
-    <option>Maharashtra</option>
-    <option>Bihar</option>
-    <option>West Bengal</option>
-    <option>Madhya Pradesh</option>
-    <option>Tamil Nadu</option>
-    <option>Rajasthan</option>
-    <option>Karnataka</option>
-    <option>Gujarat</option>
-    <option>Odisha</option>
-    <option>Kerala</option>
-    <option>Assam</option>
-    <option>Punjab</option>
-    <option>Haryana</option>
-    <option>Jharkhand</option>
-  </optgroup>
-
-  <!-- USA -->
-  <optgroup label="USA">
-    <option>California</option>
-    <option>Texas</option>
-    <option>Florida</option>
-    <option>New York</option>
-    <option>Illinois</option>
-    <option>Pennsylvania</option>
-    <option>Ohio</option>
-    <option>Georgia</option>
-    <option>North Carolina</option>
-    <option>Michigan</option>
-    <option>New Jersey</option>
-    <option>Virginia</option>
-    <option>Washington</option>
-    <option>Arizona</option>
-    <option>Massachusetts</option>
-  </optgroup>
-
-  <!-- UK -->
-  <optgroup label="UK">
-    <option>London</option>
-    <option>Manchester</option>
-    <option>Birmingham</option>
-    <option>Liverpool</option>
-    <option>Leeds</option>
-    <option>Bristol</option>
-    <option>Newcastle</option>
-    <option>Sheffield</option>
-    <option>Edinburgh</option>
-    <option>Glasgow</option>
-    <option>Aberdeen</option>
-    <option>Cardiff</option>
-    <option>Swansea</option>
-    <option>Belfast</option>
-    <option>Derry</option>
-  </optgroup>
-
-  <!-- Canada -->
-  <optgroup label="Canada">
-    <option>Ontario</option>
-    <option>Quebec</option>
-    <option>British Columbia</option>
-    <option>Alberta</option>
-    <option>Manitoba</option>
-    <option>Saskatchewan</option>
-    <option>Nova Scotia</option>
-    <option>New Brunswick</option>
-    <option>Newfoundland and Labrador</option>
-    <option>Prince Edward Island</option>
-    <option>Northwest Territories</option>
-    <option>Yukon</option>
-    <option>Nunavut</option>
-    <option>Toronto</option>
-    <option>Vancouver</option>
-  </optgroup>
-
-  <!-- China -->
-  <optgroup label="China">
-    <option>Beijing</option>
-    <option>Shanghai</option>
-    <option>Guangdong</option>
-    <option>Sichuan</option>
-    <option>Henan</option>
-    <option>Shandong</option>
-    <option>Jiangsu</option>
-    <option>Zhejiang</option>
-    <option>Hunan</option>
-    <option>Hubei</option>
-    <option>Fujian</option>
-    <option>Anhui</option>
-    <option>Hebei</option>
-    <option>Liaoning</option>
-    <option>Chongqing</option>
-  </optgroup>
-
-  <!-- Japan -->
-  <optgroup label="Japan">
-    <option>Tokyo</option>
-    <option>Osaka</option>
-    <option>Kyoto</option>
-    <option>Hokkaido</option>
-    <option>Aichi</option>
-    <option>Kanagawa</option>
-    <option>Hyogo</option>
-    <option>Fukuoka</option>
-    <option>Hiroshima</option>
-    <option>Miyagi</option>
-    <option>Nagano</option>
-    <option>Shizuoka</option>
-    <option>Niigata</option>
-    <option>Okinawa</option>
-    <option>Chiba</option>
-  </optgroup>
-
-  <!-- Germany -->
-  <optgroup label="Germany">
-    <option>Bavaria</option>
-    <option>Berlin</option>
-    <option>Hamburg</option>
-    <option>North Rhine-Westphalia</option>
-    <option>Baden-Württemberg</option>
-    <option>Lower Saxony</option>
-    <option>Hesse</option>
-    <option>Saxony</option>
-    <option>Thuringia</option>
-    <option>Brandenburg</option>
-    <option>Saarland</option>
-    <option>Schleswig-Holstein</option>
-    <option>Mecklenburg-Vorpommern</option>
-    <option>Saxony-Anhalt</option>
-    <option>Bremen</option>
-  </optgroup>
-</select>
-
-<button type="submit"
-class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-Create Account
+<button class="w-full bg-blue-600 text-white py-2 rounded">
+Create Client Account
 </button>
 
 </form>
 
-<p id="message" class="text-center mt-4 font-semibold"></p>
+<!-- ENGINEER FORM -->
+<form id="engineerForm" class="space-y-3 hidden">
+
+<input type="text" id="e_first_name" placeholder="First Name" required class="w-full p-2 border rounded" />
+<input type="text" id="e_last_name" placeholder="Last Name" class="w-full p-2 border rounded" />
+
+<input type="email" id="e_email" placeholder="Email" required class="w-full p-2 border rounded" />
+<input type="password" id="e_password" placeholder="Password" required class="w-full p-2 border rounded" />
+
+<input type="text" id="e_mobile" placeholder="Mobile Number" class="w-full p-2 border rounded" />
+<input type="text" id="e_location" placeholder="Location" class="w-full p-2 border rounded" />
+<input type="text" id="e_skills" placeholder="Skills" class="w-full p-2 border rounded" />
+
+<button class="w-full bg-green-600 text-white py-2 rounded">
+Create Engineer Account
+</button>
+
+</form>
+
+<p id="msg" class="text-center mt-3"></p>
+
+<!-- Login link -->
+<p class="text-center text-sm mt-4">
+Already registered?
+<a href="login.html" class="text-blue-600 underline">Login / Sign in</a>
+</p>
 
 </div>
 
 <script>
-document.getElementById("signupForm").addEventListener("submit", function(e) {
-    e.preventDefault();
+function toggleForm(){
+  const role = document.querySelector('input[name="role"]:checked').value;
+  document.getElementById("clientForm").classList.toggle("hidden", role !== "client");
+  document.getElementById("engineerForm").classList.toggle("hidden", role !== "engineer");
+}
 
-    let email = document.getElementById("email").value;
-    let messageBox = document.getElementById("message");
+/* =======================
+   CLIENT REGISTER
+======================= */
+document.getElementById("clientForm").addEventListener("submit", async function(e){
+  e.preventDefault();
 
-    // Dummy email check (Later replace with Backend API)
-    let existingEmails = ["test@gmail.com", "admin@techrescue.com"];
+  const data = {
+    name: document.getElementById("c_name").value,
+    email: document.getElementById("c_email").value,
+    password: document.getElementById("c_password").value,
+    company: document.getElementById("c_company").value,
+    location: document.getElementById("c_location").value
+  };
 
-    if (existingEmails.includes(email.toLowerCase())) {
-        messageBox.innerHTML = `
-            <span class="text-red-600">Account already exists.</span><br>
-            <button onclick="resetPassword()" class="text-blue-600 underline">
-            Reset Password
-            </button>
-        `;
-    } else {
-        messageBox.innerHTML =
-            '<span class="text-green-600">🎉 Congratulations! Your account is created.</span>';
-
-        setTimeout(() => {
-            window.location.href = "welcome-questions.html";
-        }, 2000);
-    }
+  document.getElementById("msg").innerText = "Client registration API connect karenge next step me";
 });
 
-function resetPassword() {
-    let email = document.getElementById("email").value;
-    alert("Password reset link will be sent to: " + email);
-}
+/* =======================
+   ENGINEER REGISTER
+======================= */
+document.getElementById("engineerForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const data = {
+    first_name: document.getElementById("e_first_name").value,
+    last_name: document.getElementById("e_last_name").value,
+    email: document.getElementById("e_email").value,
+    password: document.getElementById("e_password").value,
+    mobile: document.getElementById("e_mobile").value,
+    location: document.getElementById("e_location").value,
+    skills: document.getElementById("e_skills").value,
+    status: "Active"
+  };
+
+  try {
+    const res = await fetch("https://techrescue.onrender.com/add-engineer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if(res.ok){
+      document.getElementById("msg").innerText = "✅ Engineer Registered Successfully";
+      document.getElementById("engineerForm").reset();
+    }else{
+      document.getElementById("msg").innerText = result.error;
+    }
+
+  } catch(err){
+    document.getElementById("msg").innerText = "❌ Server error";
+  }
+});
 </script>
 
 </body>
