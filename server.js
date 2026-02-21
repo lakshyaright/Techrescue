@@ -402,6 +402,33 @@ io.on("connection", (socket) => {
 });
 
 /* =========================
+   UPDATE ONLINE STATUS
+========================= */
+app.post("/update-status", async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { online } = req.body;
+
+    const { error } = await supabase
+      .from("engineers")
+      .update({ online })
+      .eq("id", decoded.id);
+
+    if (error) throw error;
+
+    // broadcast to all clients
+    io.emit("statusChanged", { id: decoded.id, online });
+
+    res.json({ status: "updated" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update status" });
+  }
+});
+/* =========================
    START SERVER
 ========================= */
 const PORT = process.env.PORT || 10000;
