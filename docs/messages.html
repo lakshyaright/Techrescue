@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Messages - TechRescue</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+
+<script>
+const token = localStorage.getItem("token");
+if(!token) window.location.href = "login.html";
+
+async function loadMessages(){
+  try{
+    const res = await fetch("https://techrescue.onrender.com/messages", {
+      headers:{ "Authorization":"Bearer " + token }
+    });
+
+    const msgs = await res.json();
+    const container = document.getElementById("msgContainer");
+    container.innerHTML = "";
+
+    if(msgs.length === 0){
+      container.innerHTML = "<p>No messages.</p>";
+      return;
+    }
+
+    msgs.forEach(m=>{
+      container.innerHTML += `
+        <div class="bg-white p-4 rounded shadow mb-3">
+          <p>${m.message}</p>
+          <small>${new Date(m.created_at).toLocaleString()}</small>
+        </div>
+      `;
+    });
+
+  }catch(err){
+    console.log(err);
+    window.location.href="login.html";
+  }
+}
+loadMessages();
+</script>
+
+<h1 class="text-2xl font-bold mb-4">Messages</h1>
+<div id="msgContainer"></div>
+
+</body>
+</html>
