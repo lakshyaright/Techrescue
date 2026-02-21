@@ -317,10 +317,12 @@ loadMyStatus();
 const token = localStorage.getItem("token");
 if(!token) window.location.href="login.html";
 
+/* Load current status */
 async function loadMyStatus(){
   const res = await fetch("https://techrescue.onrender.com/me", {
     headers:{ "Authorization":"Bearer " + token }
   });
+
   const user = await res.json();
 
   if(user.online){
@@ -330,6 +332,7 @@ async function loadMyStatus(){
 }
 loadMyStatus();
 
+/* Toggle Online/Offline */
 async function toggleStatus(){
   const online = document.getElementById("statusToggle").checked;
 
@@ -349,6 +352,7 @@ async function toggleStatus(){
   
 </body>
 </html>
+
 
 
 
