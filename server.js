@@ -420,13 +420,10 @@ app.post("/update-status", async (req, res) => {
 
     if (error) throw error;
 
-    // 🔴 Broadcast status change to all connected clients
-    if (typeof io !== "undefined") {
-      io.emit("statusChanged", {
-        id: decoded.id,
-        online
-      });
-    }
+    io.emit("statusChanged", {
+      id: decoded.id,
+      online
+    });
 
     res.json({ status: "updated", online });
 
