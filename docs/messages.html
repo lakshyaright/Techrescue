@@ -1,50 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Messages - TechRescue</title>
-<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* SAME CSS AS DASHBOARD */
+body{
+  margin:0;
+  font-family:'Inter',Arial,sans-serif;
+  background:#f4f6f8;
+  color:#333;
+  display:flex;
+  height:100vh;
+}
+.sidebar{
+  width:240px;
+  background:#fff;
+  border-right:1px solid #ddd;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+}
+.sidebar h2{
+  font-size:18px;
+  margin-bottom:30px;
+  color:#0066cc;
+}
+.sidebar nav ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+  flex:1;
+}
+.sidebar nav li{margin-bottom:20px;}
+.sidebar nav a{
+  text-decoration:none;
+  color:#333;
+  font-weight:500;
+  display:flex;
+  justify-content:space-between;
+}
+.sidebar nav a.active{color:#0066cc;}
+.sidebar .settings{margin-top:auto;}
+
+.main{flex:1;display:flex;flex-direction:column;}
+.topbar{
+  background:#0066cc;
+  color:#fff;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.avatar{
+  background:#005bb5;
+  border-radius:50%;
+  width:35px;height:35px;
+  display:flex;justify-content:center;align-items:center;
+  font-weight:bold;
+}
+.content{padding:20px;overflow-y:auto;}
+
+.message-box{
+  background:#fff;
+  padding:20px;
+  border-radius:8px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom:15px;
+}
+.message-box h4{margin:0 0 5px;}
+.message-box small{color:#777;}
+</style>
 </head>
 
-<body class="bg-gray-100 p-6">
+<body>
+
+<div class="sidebar">
+  <h2>TechRescue</h2>
+  <nav>
+    <ul>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="jobs.html">Jobs</a></li>
+      <li><a href="messages.html" class="active">Messages</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <ul class="settings">
+      <li><a href="#">Account Settings</a></li>
+      <li><a href="#" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
+</div>
+
+<div class="main">
+
+<div class="topbar">
+  <div>Messages</div>
+  <div style="display:flex;align-items:center;gap:15px;">
+    <div class="avatar" id="avatar">--</div>
+    <div id="userName">Loading...</div>
+  </div>
+</div>
+
+<div class="content">
+
+<div class="message-box">
+  <h4>Client John</h4>
+  <p>Please check the server issue urgently.</p>
+  <small>10 mins ago</small>
+</div>
+
+<div class="message-box">
+  <h4>Client Sarah</h4>
+  <p>Can you configure firewall today?</p>
+  <small>1 hour ago</small>
+</div>
+
+</div>
+</div>
 
 <script>
 const token = localStorage.getItem("token");
-if(!token) window.location.href = "login.html";
+if(!token){window.location.href="Login.html";}
 
-async function loadMessages(){
-  try{
-    const res = await fetch("https://techrescue.onrender.com/messages", {
-      headers:{ "Authorization":"Bearer " + token }
-    });
-
-    const msgs = await res.json();
-    const container = document.getElementById("msgContainer");
-    container.innerHTML = "";
-
-    if(msgs.length === 0){
-      container.innerHTML = "<p>No messages.</p>";
-      return;
-    }
-
-    msgs.forEach(m=>{
-      container.innerHTML += `
-        <div class="bg-white p-4 rounded shadow mb-3">
-          <p>${m.message}</p>
-          <small>${new Date(m.created_at).toLocaleString()}</small>
-        </div>
-      `;
-    });
-
-  }catch(err){
-    console.log(err);
-    window.location.href="login.html";
-  }
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href="Login.html";
 }
-loadMessages();
 </script>
-
-<h1 class="text-2xl font-bold mb-4">Messages</h1>
-<div id="msgContainer"></div>
 
 </body>
 </html>
