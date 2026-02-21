@@ -379,8 +379,6 @@ io.on("connection", (socket) => {
       message,
       time: new Date()
     });
-  });
-
   // ✅ Correct disconnect inside connection
   socket.on("disconnect", async () => {
     if (socket.userId) {
