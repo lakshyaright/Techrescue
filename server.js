@@ -487,6 +487,54 @@ app.get("/online-engineers", async (req, res) => {
 
   res.json(data);
 });
+
+/* =========================
+   DASHBOARD STATS
+========================= */
+app.get("/dashboard-stats", async (req, res) => {
+  try {
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const email = decoded.email;
+
+    // Example queries (adjust table names if needed)
+
+    const { count: completedJobs } = await supabase
+      .from("jobs")
+      .select("*", { count: "exact", head: true })
+      .eq("engineer_email", email)
+      .eq("status", "completed");
+
+    const { data: earningsData } = await supabase
+      .from("jobs")
+      .select("amount")
+      .eq("engineer_email", email)
+      .eq("status", "completed");
+
+    let totalEarnings = 0;
+    earningsData?.forEach(job => {
+      totalEarnings += job.amount || 0;
+    });
+
+    res.json({
+      totalEarnings,
+      completedJobs,
+      rating: 4.9  // later database se nikalenge
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to load dashboard data" });
+  }
+});
+   
 /* =========================
    START SERVER
 ========================= */
