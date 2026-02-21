@@ -1,50 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Profile - TechRescue</title>
-<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* SAME CSS STRUCTURE */
+body{
+  margin:0;
+  font-family:'Inter',Arial,sans-serif;
+  background:#f4f6f8;
+  color:#333;
+  display:flex;
+  height:100vh;
+}
+.sidebar{
+  width:240px;
+  background:#fff;
+  border-right:1px solid #ddd;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+}
+.sidebar h2{font-size:18px;margin-bottom:30px;color:#0066cc;}
+.sidebar nav ul{list-style:none;padding:0;margin:0;flex:1;}
+.sidebar nav li{margin-bottom:20px;}
+.sidebar nav a{text-decoration:none;color:#333;font-weight:500;}
+.sidebar nav a.active{color:#0066cc;}
+.sidebar .settings{margin-top:auto;}
+
+.main{flex:1;display:flex;flex-direction:column;}
+.topbar{
+  background:#0066cc;
+  color:#fff;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.content{padding:20px;overflow-y:auto;}
+
+.form-box{
+  background:#fff;
+  padding:25px;
+  border-radius:8px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.1);
+  max-width:600px;
+}
+.form-box input, .form-box textarea{
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+  border:1px solid #ddd;
+  border-radius:6px;
+}
+.form-box button{
+  background:#0066cc;
+  color:#fff;
+  border:none;
+  padding:10px 15px;
+  border-radius:6px;
+  cursor:pointer;
+}
+</style>
 </head>
 
-<body class="bg-gray-100 p-6">
+<body>
+
+<div class="sidebar">
+  <h2>TechRescue</h2>
+  <nav>
+    <ul>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="jobs.html">Jobs</a></li>
+      <li><a href="messages.html">Messages</a></li>
+      <li><a href="profile.html" class="active">Profile</a></li>
+    </ul>
+    <ul class="settings">
+      <li><a href="#">Account Settings</a></li>
+      <li><a href="#" onclick="logout()">Logout</a></li>
+    </ul>
+  </nav>
+</div>
+
+<div class="main">
+
+<div class="topbar">
+  <div>My Profile</div>
+</div>
+
+<div class="content">
+
+<div class="form-box">
+  <h3>Edit Profile</h3>
+
+  <input type="text" placeholder="First Name"/>
+  <input type="text" placeholder="Last Name"/>
+  <input type="text" placeholder="Role"/>
+  <input type="text" placeholder="Experience"/>
+  <textarea placeholder="Professional Summary"></textarea>
+
+  <button>Save Changes</button>
+</div>
+
+</div>
+</div>
 
 <script>
 const token = localStorage.getItem("token");
-if(!token) window.location.href = "login.html";
+if(!token){window.location.href="Login.html";}
 
-async function loadProfile(){
-  try{
-    const res = await fetch("https://techrescue.onrender.com/profile", {
-      headers:{ "Authorization":"Bearer " + token }
-    });
-
-    const profile = await res.json();
-    const container = document.getElementById("profileContainer");
-
-    if(!profile){
-      container.innerHTML = "<p>No profile data found.</p>";
-      return;
-    }
-
-    container.innerHTML = `
-      <div class="bg-white p-6 rounded shadow">
-        <h2 class="text-xl font-bold mb-3">Engineer Profile</h2>
-        <p><b>Role:</b> ${profile.role || "-"}</p>
-        <p><b>Experience:</b> ${profile.experience || "-"}</p>
-        <p><b>Summary:</b> ${profile.summary || "-"}</p>
-        <small>${new Date(profile.created_at).toLocaleString()}</small>
-      </div>
-    `;
-
-  }catch(err){
-    console.log(err);
-    window.location.href="login.html";
-  }
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href="Login.html";
 }
-loadProfile();
 </script>
-
-<h1 class="text-2xl font-bold mb-4">My Profile</h1>
-<div id="profileContainer"></div>
 
 </body>
 </html>
