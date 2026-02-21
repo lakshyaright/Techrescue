@@ -359,7 +359,52 @@ app.post("/send-message", async (req, res) => {
 /* =========================
    RENDER PORT (IMPORTANT)
 ========================= */
+const http = require("http");
+const { Server } = require("socket.io");
+
+// create HTTP server from express
+const server = http.createServer(app);
+
+// attach socket.io
+const io = new Server(server, {
+  cors: { origin: "*" }
+});
+
+/* =========================
+   SOCKET REALTIME CHAT
+========================= */
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("join", (userId) => {
+    socket.join("user_" + userId);
+  });
+
+  socket.on("sendMessage", async (data) => {
+    const { sender_id, receiver_id, message } = data;
+
+    // save in DB
+    await supabase.from("messages").insert([
+      { sender_id, receiver_id, message }
+    ]);
+
+    // send live to receiver
+    io.to("user_" + receiver_id).emit("newMessage", {
+      sender_id,
+      message,
+      time: new Date()
+    });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
+
+/* =========================
+   START SERVER
+========================= */
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log("TechRescue Server running on port " + PORT);
+server.listen(PORT, () => {
+  console.log("Realtime Chat Server running on " + PORT);
 });
