@@ -428,6 +428,20 @@ app.post("/update-status", async (req, res) => {
     res.status(500).json({ error: "Failed to update status" });
   }
 });
+
+/* =========================
+   GET ONLINE ENGINEERS
+========================= */
+app.get("/online-engineers", async (req, res) => {
+  const { data, error } = await supabase
+    .from("engineers")
+    .select("id, first_name, last_name, email")
+    .eq("online", true);
+
+  if (error) return res.status(500).json({ error });
+
+  res.json(data);
+});
 /* =========================
    START SERVER
 ========================= */
