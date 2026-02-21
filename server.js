@@ -184,6 +184,34 @@ app.post("/login", async (req, res) => {
 });
 
 /* =========================
+   GET CURRENT USER (JWT)
+========================= */
+app.get("/me", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "No token" });
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { data: user, error } = await supabase
+      .from("engineers")
+      .select("id, first_name, last_name, email")
+      .eq("id", decoded.id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
+
+  } catch (err) {
+    console.error("ME ERROR:", err);
+    res.status(401).json({ error: "Invalid token" });
+  }
+});
+
+/* =========================
    RENDER PORT (IMPORTANT)
 ========================= */
 const PORT = process.env.PORT || 10000;
