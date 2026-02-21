@@ -1,626 +1,200 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Engineer Dashboard - IT Ticket System</title>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Alerts - TechRescue</title>
 
-    html, body {
-      height: 100%;
-      width: 100%;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
 
-    body {
-      font-family: 'Inter', Arial, sans-serif;
-      background: #f4f6f8;
-      color: #333;
-      display: flex;
-      overflow: hidden;
-    }
+<style>
+body{
+  margin:0;
+  font-family:'Inter',Arial,sans-serif;
+  background:#f4f6f8;
+  color:#333;
+  display:flex;
+  height:100vh;
+}
 
-    /* Sidebar */
-    .sidebar {
-      width: 240px;
-      background: #fff;
-      border-right: 1px solid #ddd;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      box-sizing: border-box;
-      overflow-y: auto;
-    }
+/* Sidebar */
+.sidebar{
+  width:240px;
+  background:#fff;
+  border-right:1px solid #ddd;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+}
+.sidebar h2{
+  font-size:18px;
+  margin-bottom:30px;
+  color:#0066cc;
+}
+.sidebar nav ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+  flex:1;
+}
+.sidebar nav li{margin-bottom:20px;}
+.sidebar nav a{
+  text-decoration:none;
+  color:#333;
+  font-weight:500;
+  display:flex;
+  justify-content:space-between;
+}
+.sidebar nav a.active{color:#0066cc;}
+.sidebar .settings{margin-top:auto;}
 
-    .sidebar h2 {
-      font-size: 18px;
-      margin-bottom: 30px;
-      color: #0066cc;
-    }
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;}
 
-    .sidebar nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      flex: 1;
-    }
+.topbar{
+  background:#0066cc;
+  color:#fff;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .sidebar nav li {
-      margin-bottom: 20px;
-    }
+.avatar{
+  background:#005bb5;
+  border-radius:50%;
+  width:35px;
+  height:35px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:bold;
+}
 
-    .sidebar nav a {
-      text-decoration: none;
-      color: #333;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-    }
+.content{
+  padding:20px;
+  overflow-y:auto;
+}
 
-    .sidebar nav a:hover {
-      background: #f0f4ff;
-      color: #0066cc;
-    }
+/* Alert Card */
+.alert-card{
+  background:#fff3cd;
+  border:1px solid #ffeeba;
+  padding:15px;
+  border-radius:8px;
+  margin-bottom:15px;
+}
 
-    .sidebar nav a.active {
-      color: #0066cc;
-      background: #f0f4ff;
-    }
+.alert-card h4{
+  margin:0 0 8px;
+  font-size:15px;
+}
 
-    .sidebar .settings {
-      margin-top: auto;
-      border-top: 1px solid #e0e0e0;
-      padding-top: 15px;
-    }
+.alert-card p{
+  margin:0 0 8px;
+  font-size:14px;
+}
 
-    /* Main Container */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+.alert-actions button{
+  padding:6px 12px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:12px;
+  margin-right:6px;
+}
 
-    .topbar {
-      background: #0066cc;
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+.ignore{
+  background:#ccc;
+  color:#333;
+}
 
-    .topbar .left {
-      font-weight: 600;
-      font-size: 16px;
-    }
+.respond{
+  background:#0066cc;
+  color:#fff;
+}
+</style>
+</head>
 
-    .topbar .right {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+<body>
 
-    .topbar .avatar {
-      background: #005bb5;
-      border-radius: 50%;
-      width: 35px;
-      height: 35px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .status-bar {
-      padding: 12px 20px;
-      background: #eef4ff;
-      border-bottom: 1px solid #ddd;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .status-bar label {
-      cursor: pointer;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-bar input[type="checkbox"] {
-      cursor: pointer;
-    }
-
-    /* Content Area */
-    .content {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    .content h3 {
-      margin-bottom: 15px;
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .stats-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-
-    .stat-card {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .stat-card h4 {
-      margin: 0 0 10px;
-      font-size: 13px;
-      color: #666;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .stat-card .number {
-      font-size: 28px;
-      margin: 0;
-      font-weight: 700;
-      color: #0066cc;
-    }
-
-    .stat-card .trend {
-      font-size: 12px;
-      color: #999;
-      margin-top: 8px;
-    }
-
-    .alerts-section {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .alert-item {
-      background: #fffbf0;
-      border-left: 4px solid #ff9800;
-      padding: 15px;
-      border-radius: 4px;
-      margin-bottom: 12px;
-    }
-
-    .alert-item.critical {
-      background: #ffebee;
-      border-left-color: #f44336;
-    }
-
-    .alert-item.high {
-      background: #fff3e0;
-      border-left-color: #ff9800;
-    }
-
-    .alert-item.medium {
-      background: #e3f2fd;
-      border-left-color: #2196f3;
-    }
-
-    .alert-item.low {
-      background: #e8f5e9;
-      border-left-color: #4caf50;
-    }
-
-    .alert-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      margin-bottom: 8px;
-    }
-
-    .alert-header h4 {
-      margin: 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .alert-ticket-id {
-      font-size: 12px;
-      background: rgba(0,0,0,0.1);
-      padding: 2px 8px;
-      border-radius: 4px;
-      color: #333;
-      font-weight: 600;
-    }
-
-    .alert-content {
-      margin-bottom: 10px;
-    }
-
-    .alert-content p {
-      margin: 0 0 4px;
-      font-size: 13px;
-      color: #555;
-      line-height: 1.4;
-    }
-
-    .alert-client {
-      font-size: 12px;
-      color: #999;
-      margin-top: 6px;
-    }
-
-    .alert-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .alert-actions button {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .btn-accept {
-      background: #4caf50;
-      color: white;
-    }
-
-    .btn-accept:hover {
-      background: #45a049;
-    }
-
-    .btn-reject {
-      background: #ccc;
-      color: #333;
-    }
-
-    .btn-reject:hover {
-      background: #bbb;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #999;
-    }
-
-    .empty-state p {
-      font-size: 14px;
-      margin: 0;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      background: #f44336;
-      color: white;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid #ddd;
-      }
-
-      .stats-cards {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
- </head>
- <body><!-- Sidebar -->
-  <div class="sidebar">
-   <h2>🎟️ TechRescue</h2>
-   <nav>
+<!-- Sidebar -->
+<div class="sidebar">
+  <h2>TechRescue</h2>
+  <nav>
     <ul>
-     <li><a href="#" class="active">Dashboard</a></li>
-     <li><a href="#">Alerts <span class="badge" id="alert-badge">0</span></a></li>
-     <li><a href="#">Chat History</a></li>
-     <li><a href="#">Profile</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="alerts.html" class="active">Alerts <span style="color:red;">3</span></a></li>
+      <li><a href="jobs.html">Jobs</a></li>
+      <li><a href="messages.html">Messages</a></li>
+      <li><a href="profile.html">Profile</a></li>
     </ul>
     <ul class="settings">
-     <li><a href="#">Settings</a></li>
+      <li><a href="#">Account Settings</a></li>
+      <li><a href="#" onclick="logout()">Logout</a></li>
     </ul>
-   </nav>
-  </div><!-- Main Content -->
-  <div class="main"><!-- Topbar -->
-   <div class="topbar">
-    <div class="left" id="welcomeText">
-     Welcome back...
-    </div>
-    <div class="right">
-     <div>
-      🔔 <span style="color:yellow;" id="notif-count">0</span>
-     </div>
-     <div class="avatar" id="avatar">
-      --
-     </div>
-     <div id="userName">
-      Engineer
-     </div>
-    </div>
-   </div><!-- Status Bar -->
-   <div class="status-bar"><label> <input type="checkbox" id="statusToggle" onchange="toggleAvailability()"> <span id="statusText">Offline 🔴</span> </label>
-   </div><!-- Content -->
-   <div class="content"><!-- Stats -->
-    <div class="stats-cards">
-     <div class="stat-card">
-      <h4>Total Tickets</h4>
-      <p class="number" id="total-tickets">0</p>
-      <div class="trend">
-       All time
-      </div>
-     </div>
-     <div class="stat-card">
-      <h4>Accepted Today</h4>
-      <p class="number" id="accepted-today">0</p>
-      <div class="trend">
-       Open tickets
-      </div>
-     </div>
-     <div class="stat-card">
-      <h4>Average Response</h4>
-      <p class="number" id="avg-response">--</p>
-      <div class="trend">
-       Time to first response
-      </div>
-     </div>
-    </div><!-- Active Alerts -->
-    <h3>🚨 Live Ticket Alerts</h3>
-    <div class="alerts-section">
-     <div id="alerts-container">
-      <div class="empty-state">
-       <p>No active tickets. Waiting for new alerts...</p>
-      </div>
-     </div>
-    </div>
-   </div>
+  </nav>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+<!-- Topbar -->
+<div class="topbar">
+  <div>New Alerts</div>
+  <div style="display:flex;align-items:center;gap:15px;">
+    <div class="avatar" id="avatar">--</div>
+    <div id="userName">Loading...</div>
   </div>
-  <script>
-    let currentConfig = {
-      engineer_name: 'Engineer',
-      availability_status: 'Offline'
-    };
+</div>
 
-    let allTickets = [];
-    const defaultConfig = {
-      engineer_name: 'Engineer',
-      availability_status: 'Offline'
-    };
+<!-- Content -->
+<div class="content">
 
-    const dataHandler = {
-      onDataChanged(data) {
-        allTickets = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        renderAlerts();
-        updateStats();
-      }
-    };
+<div class="alert-card">
+  <h4>Network Troubleshooting</h4>
+  <p>Urgent issue: Router not responding in branch office.</p>
+  <small>30 mins ago</small>
+  <div class="alert-actions">
+    <button class="ignore">Ignore</button>
+    <button class="respond">Respond</button>
+  </div>
+</div>
 
-    async function initializeSDK() {
-      const dataResult = await window.dataSdk.init(dataHandler);
-      if (!dataResult.isOk) {
-        console.error('Data SDK initialization failed');
-      }
+<div class="alert-card">
+  <h4>Office 365 Configuration</h4>
+  <p>Need help setting up email accounts for 20 employees.</p>
+  <small>2 hours ago</small>
+  <div class="alert-actions">
+    <button class="ignore">Ignore</button>
+    <button class="respond">Respond</button>
+  </div>
+</div>
 
-      if (window.elementSdk) {
-        window.elementSdk.init({
-          defaultConfig,
-          onConfigChange: (config) => {
-            currentConfig = config;
-            document.getElementById('welcomeText').textContent = `Welcome back, ${config.engineer_name || defaultConfig.engineer_name}`;
-            const initials = (config.engineer_name || 'E').split(' ').map(n => n[0]).join('').toUpperCase();
-            document.getElementById('avatar').textContent = initials.substring(0, 2);
-            document.getElementById('userName').textContent = config.engineer_name || defaultConfig.engineer_name;
-          },
-          mapToCapabilities: (config) => ({
-            recolorables: [],
-            borderables: [],
-            fontEditable: undefined,
-            fontSizeable: undefined
-          }),
-          mapToEditPanelValues: (config) => new Map([
-            ['engineer_name', config.engineer_name || defaultConfig.engineer_name]
-          ])
-        });
-      }
+<div class="alert-card">
+  <h4>Firewall Setup</h4>
+  <p>Configure new Fortigate firewall for corporate network.</p>
+  <small>5 hours ago</small>
+  <div class="alert-actions">
+    <button class="ignore">Ignore</button>
+    <button class="respond">Respond</button>
+  </div>
+</div>
 
-      createSampleTickets();
-    }
+</div>
+</div>
 
-    function renderAlerts() {
-      const container = document.getElementById('alerts-container');
-      const openTickets = allTickets.filter(t => t.status === 'open');
+<script>
+const token = localStorage.getItem("token");
+if(!token){
+  window.location.href="Login.html";
+}
 
-      document.getElementById('alert-badge').textContent = openTickets.length;
-      document.getElementById('notif-count').textContent = openTickets.length;
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href="Login.html";
+}
+</script>
 
-      if (openTickets.length === 0) {
-        container.innerHTML = '<div class="empty-state"><p>No active tickets. Waiting for new alerts...</p></div>';
-        return;
-      }
-
-      container.innerHTML = openTickets.map(ticket => `
-        <div class="alert-item ${ticket.severity}">
-          <div class="alert-header">
-            <h4>${ticket.issue_type}</h4>
-            <span class="alert-ticket-id">${ticket.ticket_id}</span>
-          </div>
-          <div class="alert-content">
-            <p><strong>${ticket.client_name}</strong></p>
-            <p>${ticket.description}</p>
-            <div class="alert-client">Reported ${formatTime(ticket.created_at)}</div>
-          </div>
-          <div class="alert-actions">
-            <button class="btn-accept" onclick="acceptTicket('${ticket.__backendId}')">Accept</button>
-            <button class="btn-reject" onclick="rejectTicket('${ticket.__backendId}')">Reject</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function formatTime(isoString) {
-      const date = new Date(isoString);
-      const now = new Date();
-      const diff = Math.floor((now - date) / 1000);
-
-      if (diff < 60) return 'just now';
-      if (diff < 3600) return Math.floor(diff / 60) + ' mins ago';
-      if (diff < 86400) return Math.floor(diff / 3600) + ' hours ago';
-      return Math.floor(diff / 86400) + ' days ago';
-    }
-
-    function updateStats() {
-      const total = allTickets.length;
-      const accepted = allTickets.filter(t => t.status === 'accepted').length;
-      const open = allTickets.filter(t => t.status === 'open').length;
-
-      document.getElementById('total-tickets').textContent = total;
-      document.getElementById('accepted-today').textContent = open;
-    }
-
-    async function acceptTicket(ticketId) {
-      const ticket = allTickets.find(t => t.__backendId === ticketId);
-      if (!ticket) return;
-
-      const updated = {
-        ...ticket,
-        status: 'accepted',
-        assigned_engineer: currentConfig.engineer_name || defaultConfig.engineer_name,
-        messages: JSON.stringify([{
-          sender: 'system',
-          text: `Ticket accepted by ${currentConfig.engineer_name || defaultConfig.engineer_name}`,
-          timestamp: new Date().toISOString()
-        }])
-      };
-
-      const result = await window.dataSdk.update(updated);
-      if (result.isOk) {
-        showNotification(`Ticket ${ticket.ticket_id} accepted!`, 'success');
-      }
-    }
-
-    async function rejectTicket(ticketId) {
-      const ticket = allTickets.find(t => t.__backendId === ticketId);
-      if (!ticket) return;
-
-      const updated = {
-        ...ticket,
-        status: 'rejected'
-      };
-
-      const result = await window.dataSdk.update(updated);
-      if (result.isOk) {
-        showNotification(`Ticket ${ticket.ticket_id} rejected`, 'success');
-      }
-    }
-
-    function toggleAvailability() {
-      const isOnline = document.getElementById('statusToggle').checked;
-      document.getElementById('statusText').textContent = isOnline ? 'Online 🟢' : 'Offline 🔴';
-    }
-
-    function showNotification(message, type) {
-      const notification = document.createElement('div');
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? '#4caf50' : '#f44336'};
-        color: white;
-        padding: 12px 20px;
-        border-radius: 6px;
-        font-weight: 600;
-        z-index: 9999;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      `;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
-
-    async function createSampleTickets() {
-      if (allTickets.length > 0) return;
-
-      const samples = [
-        {
-          ticket_id: 'TK-001',
-          client_name: 'Acme Corp',
-          issue_type: 'Network Connectivity',
-          description: 'VPN connection dropping intermittently. Unable to access company resources.',
-          severity: 'critical',
-          status: 'open',
-          created_at: new Date().toISOString(),
-          assigned_engineer: '',
-          messages: '[]'
-        },
-        {
-          ticket_id: 'TK-002',
-          client_name: 'Tech Startup LLC',
-          issue_type: 'Email Configuration',
-          description: 'Outlook not syncing emails from last 48 hours.',
-          severity: 'high',
-          status: 'open',
-          created_at: new Date(Date.now() - 600000).toISOString(),
-          assigned_engineer: '',
-          messages: '[]'
-        },
-        {
-          ticket_id: 'TK-003',
-          client_name: 'Finance Inc',
-          issue_type: 'Hardware Issue',
-          description: 'Monitor display flickering. Already tried rebooting.',
-          severity: 'medium',
-          status: 'open',
-          created_at: new Date(Date.now() - 1200000).toISOString(),
-          assigned_engineer: '',
-          messages: '[]'
-        }
-      ];
-
-      for (const ticket of samples) {
-        await window.dataSdk.create(ticket);
-      }
-    }
-
-    initializeSDK();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d16d0b454ce0d14',t:'MTc3MTY4MjkwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
