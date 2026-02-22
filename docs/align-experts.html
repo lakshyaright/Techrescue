@@ -12,12 +12,14 @@
   <header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
     <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
     <div class="flex items-center space-x-4">
-      <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">JD</div>
+      <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">
+        JD
+      </div>
       <span>John Doe</span>
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
+  <!-- Navigation -->
   <nav class="bg-white shadow flex space-x-4 px-6 py-2 border-b text-sm font-medium">
     <a href="client.html" class="text-gray-600 hover:text-blue-600 py-2">Dashboard</a>
     <a href="raise-query.html" class="text-gray-600 hover:text-blue-600 py-2">Raise Query</a>
@@ -27,186 +29,113 @@
     <a href="recent-activity.html" class="text-gray-600 hover:text-blue-600 py-2">Recent Activity</a>
   </nav>
 
-  <!-- Main Content -->
   <main class="p-6 space-y-6">
 
     <!-- Section Header -->
     <section class="bg-white rounded shadow p-4">
       <h2 class="text-lg font-semibold mb-1">Align Experts</h2>
-      <p class="text-gray-500">Search, filter and hire certified experts for your IT needs.</p>
+      <p class="text-gray-500">
+        Search and hire certified experts for your IT needs.
+      </p>
     </section>
 
-    <!-- Filters -->
-    <section class="bg-white rounded shadow p-4 flex flex-wrap gap-4 items-center">
-      <input id="searchInput" type="text" placeholder="Search by name or skill…" 
+    <!-- Search -->
+    <section class="bg-white rounded shadow p-4">
+      <input id="searchInput" type="text"
+             placeholder="Search by name..."
              class="border border-gray-300 rounded px-3 py-2 w-full md:w-1/3" />
-
-      <select id="expertiseFilter" class="border border-gray-300 rounded px-3 py-2">
-        <option value="">Expertise Area</option>
-        <option value="Network Security">Network Security</option>
-        <option value="Cloud Infrastructure">Cloud Infrastructure</option>
-        <option value="Hardware">Hardware</option>
-      </select>
-
-      <select id="availabilityFilter" class="border border-gray-300 rounded px-3 py-2">
-        <option value="">Availability</option>
-        <option value="Now">Now</option>
-        <option value="Tomorrow">Tomorrow</option>
-      </select>
-
-      <select id="locationFilter" class="border border-gray-300 rounded px-3 py-2">
-        <option value="">Location</option>
-        <option value="Remote">Remote</option>
-        <option value="On-site">On-site</option>
-      </select>
-
-      <button onclick="applyFilters()"
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
-      <button onclick="resetFilters()"
-              class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">Reset</button>
+      <button onclick="applySearch()"
+              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 ml-2">
+        Search
+      </button>
     </section>
 
-    <!-- Expert Cards -->
-    <section id="expertList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-      <!-- Expert Card -->
-      <div class="expert bg-white p-4 rounded shadow"
-           data-name="Sarah Johnson"
-           data-expertise="Network Security"
-           data-availability="Now"
-           data-location="Remote"
-           data-skills="Networking,Security,CISSP">
-        <h3 class="text-lg font-semibold">Sarah Johnson</h3>
-        <p class="text-sm text-gray-500">Network Security Specialist</p>
-        <p class="mt-1 text-sm">Availability: <span class="text-green-600">Now</span></p>
-        <p class="text-sm">Location: Remote</p>
-        <p class="text-sm">⭐ Rating: 5.0 (45 reviews)</p>
-        <p class="text-sm">🛠️ Skills: Networking, Security, CISSP</p>
-        <button class="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Hire</button>
-      </div>
-
-            <div id="expertsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"></div>
-
-      <!-- Expert Card -->
-      <div class="expert bg-white p-4 rounded shadow"
-           data-name="Mike Chen"
-           data-expertise="Cloud Infrastructure"
-           data-availability="Tomorrow"
-           data-location="Remote"
-           data-skills="AWS,Azure,DevOps">
-        <h3 class="text-lg font-semibold">Mike Chen</h3>
-        <p class="text-sm text-gray-500">Cloud Infrastructure Engineer</p>
-        <p class="mt-1 text-sm">Availability: <span class="text-yellow-600">Tomorrow</span></p>
-        <p class="text-sm">Location: Remote</p>
-        <p class="text-sm">⭐ Rating: 4.8 (32 reviews)</p>
-        <p class="text-sm">🛠️ Skills: AWS, Azure, DevOps</p>
-        <button class="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Hire</button>
-      </div>
-
-      <!-- Expert Card -->
-      <div class="expert bg-white p-4 rounded shadow"
-           data-name="David Wilson"
-           data-expertise="Hardware"
-           data-availability="Now"
-           data-location="On-site"
-           data-skills="Servers,Repairs,Dell">
-        <h3 class="text-lg font-semibold">David Wilson</h3>
-        <p class="text-sm text-gray-500">Hardware Specialist</p>
-        <p class="mt-1 text-sm">Availability: <span class="text-green-600">Now</span></p>
-        <p class="text-sm">Location: On-site</p>
-        <p class="text-sm">⭐ Rating: 4.2 (21 reviews)</p>
-        <p class="text-sm">🛠️ Skills: Servers, Repairs, Dell</p>
-        <button class="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Hire</button>
-      </div>
-
+    <!-- Dynamic Experts Grid -->
+    <section id="expertsContainer"
+             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     </section>
+
   </main>
 
-  <!-- JavaScript Filters -->
-  <script>
-    function applyFilters() {
-      const searchText = document.getElementById('searchInput').value.toLowerCase();
-      const exp = document.getElementById('expertiseFilter').value;
-      const avail = document.getElementById('availabilityFilter').value;
-      const loc = document.getElementById('locationFilter').value;
-
-      document.querySelectorAll('.expert').forEach(card => {
-        const name = card.dataset.name.toLowerCase();
-        const expertise = card.dataset.expertise;
-        const availability = card.dataset.availability;
-        const location = card.dataset.location;
-        const skills = card.dataset.skills.toLowerCase();
-
-        const okSearch = !searchText
-          || name.includes(searchText)
-          || skills.includes(searchText);
-
-        const okExp = !exp || expertise === exp;
-        const okAvail = !avail || availability === avail;
-        const okLoc = !loc || location === loc;
-
-        card.style.display = (okSearch && okExp && okAvail && okLoc)
-          ? 'block'
-          : 'none';
-      });
-    }
-
-    function resetFilters() {
-      ['searchInput','expertiseFilter','availabilityFilter','locationFilter']
-        .forEach(id => document.getElementById(id).value = '');
-      applyFilters();
-    }
+<script>
 
 async function loadExperts(){
+  try {
 
-  const res = await fetch("https://techrescue.onrender.com/experts");
-  const experts = await res.json();
+    const res = await fetch(
+      "https://techrescue.onrender.com/experts"
+    );
 
-  const container = document.getElementById("expertsContainer");
-  container.innerHTML = "";
+    const experts = await res.json();
+    const container = document.getElementById("expertsContainer");
+    container.innerHTML = "";
 
-  experts.forEach(exp => {
+    if (!experts || experts.length === 0) {
+      container.innerHTML =
+        "<p class='text-gray-500'>No experts found.</p>";
+      return;
+    }
 
-    const profile = exp.engineer_profiles?.[0];
+    experts.forEach(exp => {
 
-    container.innerHTML += `
-      <div class="bg-white shadow rounded p-4">
-        <h3 class="font-semibold text-lg">
-          ${exp.first_name} ${exp.last_name}
-        </h3>
+      const profile = exp.engineer_profiles?.[0] || {};
 
-        <p class="text-sm text-gray-600">${exp.email}</p>
+      container.innerHTML += `
+        <div class="bg-white shadow rounded p-5">
 
-        <p class="text-sm">
-          ${exp.country || ""} ${exp.state || ""}
-        </p>
+          <h3 class="text-lg font-semibold">
+            ${exp.first_name || ""} ${exp.last_name || ""}
+          </h3>
 
-        <p class="text-sm mt-2">
-          Role: ${profile?.role || "Not Defined"}
-        </p>
+          <p class="text-sm text-gray-600">${exp.email}</p>
 
-        <p class="text-sm">
-          Experience: ${profile?.experience || "N/A"}
-        </p>
+          <p class="text-sm mt-1">
+            ${exp.country || ""} ${exp.state || ""}
+          </p>
 
-        <p class="${
-          exp.online ? "text-green-600" : "text-red-600"
-        } font-semibold mt-2">
-          ${exp.online ? "Online" : "Offline"}
-        </p>
-      </div>
-    `;
+          <p class="text-sm mt-2">
+            Role: <span class="font-medium">
+              ${profile.role || "Not Defined"}
+            </span>
+          </p>
+
+          <p class="text-sm">
+            Experience: ${profile.experience || "N/A"}
+          </p>
+
+          <p class="mt-2 font-semibold ${
+            exp.online ? "text-green-600" : "text-red-600"
+          }">
+            ${exp.online ? "Online" : "Offline"}
+          </p>
+
+          <button class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Hire
+          </button>
+
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error("Failed to load experts:", err);
+  }
+}
+
+function applySearch(){
+  const text = document.getElementById("searchInput").value.toLowerCase();
+  const cards = document.querySelectorAll("#expertsContainer > div");
+
+  cards.forEach(card => {
+    const content = card.innerText.toLowerCase();
+    card.style.display =
+      content.includes(text) ? "block" : "none";
   });
 }
 
 loadExperts();
-    
-  </script>
+
+</script>
 
 </body>
 </html>
-
-```
-
-
-
