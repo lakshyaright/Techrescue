@@ -53,7 +53,7 @@ app.post("//signup", async (req, res) => {
   try {
     console.log("BODY =>", req.body);
 
-    const { first_name, last_name, email, password, country, state } = req.body;
+    const { first_name, last_name, email, password, country, state, role } = req.body;
 
     // Required fields
     if (!first_name || !email || !password) {
