@@ -676,10 +676,13 @@ app.get("/client-dashboard", async (req, res) => {
 /* =========================
    GET ALL EXPERTS (JOIN)
 ========================= */
+
 app.get("/experts", async (req, res) => {
   try {
 
-    const { data, error } = await supabase
+    const { search, category, location, online } = req.query;
+
+    let query = supabase
       .from("engineers")
       .select(`
         id,
@@ -692,20 +695,49 @@ app.get("/experts", async (req, res) => {
         engineer_profiles (
           role,
           experience,
-          summary
+          categories
         )
       `);
 
+    // Online filter
+    if (online === "true") {
+      query = query.eq("online", true);
+    }
+
+    // Location filter
+    if (location) {
+      query = query.ilike("country", `%${location}%`);
+    }
+
+    const { data, error } = await query;
+
     if (error) throw error;
 
-    res.json(data);
+    let filtered = data;
+
+    // Name search
+    if (search) {
+      filtered = filtered.filter(e =>
+        `${e.first_name} ${e.last_name}`
+          .toLowerCase()
+          .includes(search.toLowerCase())
+      );
+    }
+
+    // Category filter
+    if (category) {
+      filtered = filtered.filter(e =>
+        e.engineer_profiles?.[0]?.categories?.includes(category)
+      );
+    }
+
+    res.json(filtered);
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch experts" });
   }
 });
-
 
 /* =========================
    GET FIELD ENGINEERS
