@@ -32,110 +32,117 @@
   <main class="p-6 space-y-6">
 
     <!-- Section Header -->
-    <section class="bg-white rounded shadow p-4">
-      <h2 class="text-lg font-semibold mb-1">Align Experts</h2>
-      <p class="text-gray-500">
-        Search and hire certified experts for your IT needs.
-      </p>
-    </section>
+<section class="bg-white rounded shadow p-4 flex flex-wrap gap-4 items-center">
 
-    <!-- Search -->
-    <section class="bg-white rounded shadow p-4">
-      <input id="searchInput" type="text"
-             placeholder="Search by name..."
-             class="border border-gray-300 rounded px-3 py-2 w-full md:w-1/3" />
-      <button onclick="applySearch()"
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 ml-2">
-        Search
-      </button>
-    </section>
+  <input id="searchInput"
+         type="text"
+         placeholder="Search by name..."
+         class="border border-gray-300 rounded px-3 py-2" />
 
-    <!-- Dynamic Experts Grid -->
-    <section id="expertsContainer"
-             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    </section>
+  <select id="categoryFilter"
+          class="border border-gray-300 rounded px-3 py-2">
+    <option value="">All Categories</option>
+    <option value="Network">Network</option>
+    <option value="Cloud">Cloud</option>
+    <option value="Hardware">Hardware</option>
+    <option value="Security">Security</option>
+  </select>
 
+  <select id="locationFilter"
+          class="border border-gray-300 rounded px-3 py-2">
+    <option value="">All Locations</option>
+    <option value="India">India</option>
+    <option value="USA">USA</option>
+  </select>
+
+  <label class="flex items-center gap-2">
+    <input type="checkbox" id="onlineFilter">
+    Online Only
+  </label>
+
+  <button onclick="loadExperts()"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    Apply
+  </button>
+
+</section>  
   </main>
 
 <script>
 
 async function loadExperts(){
-  try {
 
-    const res = await fetch(
-      "https://techrescue.onrender.com/experts"
-    );
+  const search = document.getElementById("searchInput").value;
+  const category = document.getElementById("categoryFilter").value;
+  const location = document.getElementById("locationFilter").value;
+  const online = document.getElementById("onlineFilter").checked;
 
-    const experts = await res.json();
-    const container = document.getElementById("expertsContainer");
-    container.innerHTML = "";
-
-    if (!experts || experts.length === 0) {
-      container.innerHTML =
-        "<p class='text-gray-500'>No experts found.</p>";
-      return;
-    }
-
-    experts.forEach(exp => {
-
-      const profile = exp.engineer_profiles?.[0] || {};
-
-      container.innerHTML += `
-        <div class="bg-white shadow rounded p-5">
-
-          <h3 class="text-lg font-semibold">
-            ${exp.first_name || ""} ${exp.last_name || ""}
-          </h3>
-
-          <p class="text-sm text-gray-600">${exp.email}</p>
-
-          <p class="text-sm mt-1">
-            ${exp.country || ""} ${exp.state || ""}
-          </p>
-
-          <p class="text-sm mt-2">
-            Role: <span class="font-medium">
-              ${profile.role || "Not Defined"}
-            </span>
-          </p>
-
-          <p class="text-sm">
-            Experience: ${profile.experience || "N/A"}
-          </p>
-
-          <p class="mt-2 font-semibold ${
-            exp.online ? "text-green-600" : "text-red-600"
-          }">
-            ${exp.online ? "Online" : "Offline"}
-          </p>
-
-          <button class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Hire
-          </button>
-
-        </div>
-      `;
-    });
-
-  } catch (err) {
-    console.error("Failed to load experts:", err);
-  }
-}
-
-function applySearch(){
-  const text = document.getElementById("searchInput").value.toLowerCase();
-  const cards = document.querySelectorAll("#expertsContainer > div");
-
-  cards.forEach(card => {
-    const content = card.innerText.toLowerCase();
-    card.style.display =
-      content.includes(text) ? "block" : "none";
+  const queryParams = new URLSearchParams({
+    search,
+    category,
+    location,
+    online
   });
+
+  const res = await fetch(
+    "https://techrescue.onrender.com/experts?" + queryParams
+  );
+
+  const experts = await res.json();
+  const container = document.getElementById("expertsContainer");
+  container.innerHTML = "";
+
+  if (!experts.length) {
+    container.innerHTML =
+      "<p class='text-gray-500'>No experts found.</p>";
+    return;
+  }
+
+  experts.forEach(exp => {
+
+    const profile = exp.engineer_profiles?.[0] || {};
+
+    container.innerHTML += `
+      <div class="bg-white shadow rounded p-5">
+
+        <h3 class="text-lg font-semibold">
+          ${exp.first_name} ${exp.last_name}
+        </h3>
+
+        <p class="text-sm text-gray-600">${exp.email}</p>
+
+        <p class="text-sm">
+          ${exp.country || ""} ${exp.state || ""}
+        </p>
+
+        <p class="text-sm mt-2">
+          Role: ${profile.role || "Not Defined"}
+        </p>
+
+        <p class="text-sm">
+          Categories: ${(profile.categories || []).join(", ")}
+        </p>
+
+        <p class="mt-2 font-semibold ${
+          exp.online ? "text-green-600" : "text-red-600"
+        }">
+          ${exp.online ? "Online" : "Offline"}
+        </p>
+
+        <button class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Hire
+        </button>
+
+      </div>
+    `;
+  });
+
 }
 
 loadExperts();
-
+  
 </script>
 
 </body>
 </html>
+
