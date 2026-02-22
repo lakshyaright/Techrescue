@@ -742,8 +742,11 @@ app.get("/experts", async (req, res) => {
 /* =========================
    GET FIELD ENGINEERS
 ========================= */
+
 app.get("/field-engineers", async (req, res) => {
   try {
+
+    const { search, location, online } = req.query;
 
     const { data, error } = await supabase
       .from("engineers")
@@ -757,22 +760,59 @@ app.get("/field-engineers", async (req, res) => {
         online,
         engineer_profiles (
           role,
-          experience
+          experience,
+          categories
         )
-      `)
-      .eq("engineer_profiles.role", "Field Engineer");
+      `);
 
     if (error) throw error;
 
-    res.json(data);
+    // 🔥 Manual filtering (Most reliable)
+    let filtered = data.filter(e =>
+      e.engineer_profiles?.[0]?.role === "Field Engineer"
+    );
+
+    // 🔎 Search (name + skills)
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+
+      filtered = filtered.filter(e => {
+
+        const fullName =
+          `${e.first_name} ${e.last_name}`.toLowerCase();
+
+        const skills =
+          (e.engineer_profiles?.[0]?.categories || [])
+            .join(" ")
+            .toLowerCase();
+
+        return (
+          fullName.includes(lowerSearch) ||
+          skills.includes(lowerSearch)
+        );
+      });
+    }
+
+    // 📍 Location filter
+    if (location) {
+      filtered = filtered.filter(e =>
+        (e.state || "").toLowerCase().includes(location.toLowerCase()) ||
+        (e.country || "").toLowerCase().includes(location.toLowerCase())
+      );
+    }
+
+    // 🟢 Online filter
+    if (online === "true") {
+      filtered = filtered.filter(e => e.online === true);
+    }
+
+    res.json(filtered);
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch field engineers" });
   }
 });
-
-
 
 /* =========================
    START SERVER
