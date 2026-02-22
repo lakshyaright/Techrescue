@@ -167,7 +167,89 @@
         `;
         tbody.appendChild(tr);
       });
+
+const token = localStorage.getItem("token");
+
+if(!token){
+  window.location.href = "Login.html";
+}
+
+async function loadClientDashboard(){
+
+  const res = await fetch(
+    "https://techrescue.onrender.com/client-dashboard",
+    {
+      headers:{
+        "Authorization":"Bearer "+token
+      }
+    }
+  );
+
+  const data = await res.json();
+
+  if(!res.ok){
+    console.log("Dashboard error");
+    return;
+  }
+
+  // Update counts
+  document.getElementById('totalCount').innerText = data.total;
+  document.getElementById('openCount').innerText = data.open;
+  document.getElementById('inProgressCount').innerText = data.inProgress;
+  document.getElementById('resolvedCount').innerText = data.resolved;
+
+  const total = data.total || 1;
+
+  document.getElementById('totalPct').innerText = "100%";
+  document.getElementById('openPct').innerText =
+    ((data.open/total)*100).toFixed(0)+"%";
+  document.getElementById('inProgressPct').innerText =
+    ((data.inProgress/total)*100).toFixed(0)+"%";
+  document.getElementById('resolvedPct').innerText =
+    ((data.resolved/total)*100).toFixed(0)+"%";
+
+  // Chart
+  const ctx = document.getElementById('overviewChart').getContext('2d');
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Open','In Progress','Resolved'],
+      datasets: [{
+        data: [data.open, data.inProgress, data.resolved],
+        backgroundColor: ['#FBBF24','#60A5FA','#34D399']
+      }]
+    },
+    options:{
+      cutout:'60%',
+      plugins:{ legend:{ position:'bottom' } }
+    }
+  });
+
+  // Recent Table
+  const tbody = document.getElementById('recentQueriesBody');
+  tbody.innerHTML = "";
+
+  data.recent.forEach(q=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="py-2 px-3 text-sm">${q.ticket_number}</td>
+      <td class="py-2 px-3 text-sm">${q.short_description}</td>
+      <td class="py-2 px-3 text-sm">${q.status}</td>
+      <td class="py-2 px-3 text-sm">
+        ${new Date(q.created_at).toLocaleDateString()}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+}
+
+loadClientDashboard();
+
+    
   </script>
 
 </body>
 </html>
+
