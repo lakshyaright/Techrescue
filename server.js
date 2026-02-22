@@ -20,6 +20,7 @@ const supabase = createClient(
   "sb_publishable_N_Drsk0j2uNXubC89iP__Q_G44AwRLl"
 );
 
+console.log("BODY DATA:", req.body);
 /* =========================
    TEST ROUTE
 ========================= */
