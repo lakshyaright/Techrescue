@@ -4,9 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Query History - TechRescue</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  
+
 </head>
 <body class="bg-gray-100">
 
@@ -50,166 +51,220 @@ oninput="applySearch()"/>
 <th class="px-4 py-2">Action</th>
 </tr>
 </thead>
-<tbody id="queryTable" class="divide-y divide-gray-100">
-</tbody>
+<tbody id="queryTable" class="divide-y divide-gray-100"></tbody>
 </table>
 </section>
 
 </main>
 
-  <script>
+<!-- MODAL -->
+<div id="modal"
+class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+
+<div class="bg-white w-[650px] max-h-[85vh] overflow-y-auto rounded-xl shadow-2xl p-6 relative">
+
+<button onclick="closeModal()"
+class="absolute top-3 right-4 text-gray-500 hover:text-black text-xl">✖</button>
+
+<div id="modalContent"></div>
+
+</div>
+</div>
+
+<script>
 
 const { jsPDF } = window.jspdf;
 const token = localStorage.getItem("token");
 let globalQueries = [];
 
+/* ========================= LOAD HISTORY ========================= */
 async function loadQueryHistory(){
 
-  const res = await fetch(
-    "https://techrescue.onrender.com/query-history",
-    {
-      headers: { "Authorization": "Bearer " + token }
-    }
-  );
+const res = await fetch(
+"https://techrescue.onrender.com/query-history",
+{ headers: { "Authorization": "Bearer " + token } }
+);
 
-  const queries = await res.json();
-  globalQueries = queries;
+const queries = await res.json();
+globalQueries = queries;
 
-  const table = document.getElementById("queryTable");
-  table.innerHTML = "";
+const table = document.getElementById("queryTable");
+table.innerHTML = "";
 
-  if (!queries || queries.length === 0) {
-    table.innerHTML = `
-      <tr>
-        <td colspan="6" class="text-center py-4 text-gray-500">
-          No queries found
-        </td>
-      </tr>`;
-    return;
-  }
-
-  queries.forEach((q, index) => {
-
-    const statusColor =
-      q.status === "Open" ? "bg-yellow-100 text-yellow-700" :
-      q.status === "Resolved" ? "bg-green-100 text-green-700" :
-      q.status === "Closed" ? "bg-gray-100 text-gray-700" :
-      "bg-red-100 text-red-700";
-
-    table.innerHTML += `
-      <tr>
-        <td class="px-4 py-2">${q.ticket_number}</td>
-        <td class="px-4 py-2">${q.short_description}</td>
-        <td class="px-4 py-2">${q.category}</td>
-        <td class="px-4 py-2">
-          <span class="${statusColor} px-2 py-1 rounded text-xs">
-            ${q.status || "Open"}
-          </span>
-        </td>
-        <td class="px-4 py-2">
-          ${new Date(q.created_at).toLocaleDateString()}
-        </td>
-        <td class="px-4 py-2 space-x-2">
-          <button onclick="openModal(${index})"
-            class="text-blue-600 hover:underline">
-            View
-          </button>
-          <button onclick="downloadPDF(${index})"
-            class="text-green-600 hover:underline">
-            PDF
-          </button>
-        </td>
-      </tr>
-    `;
-  });
+if (!queries || queries.length === 0) {
+table.innerHTML =
+`<tr>
+<td colspan="6" class="text-center py-4 text-gray-500">
+No queries found
+</td>
+</tr>`;
+return;
 }
 
+queries.forEach((q, index) => {
+
+const statusColor =
+q.status === "Open" ? "bg-yellow-100 text-yellow-700" :
+q.status === "Resolved" ? "bg-green-100 text-green-700" :
+q.status === "Closed" ? "bg-gray-100 text-gray-700" :
+"bg-red-100 text-red-700";
+
+table.innerHTML += `
+<tr>
+<td class="px-4 py-2">${q.ticket_number}</td>
+<td class="px-4 py-2">${q.short_description}</td>
+<td class="px-4 py-2">${q.category}</td>
+<td class="px-4 py-2">
+<span class="${statusColor} px-2 py-1 rounded text-xs">
+${q.status}
+</span>
+</td>
+<td class="px-4 py-2">
+${new Date(q.created_at).toLocaleDateString()}
+</td>
+<td class="px-4 py-2 space-x-2">
+<button onclick="openModal(${index})"
+class="text-blue-600 hover:underline">
+View
+</button>
+<button onclick="downloadPDF(${index})"
+class="text-green-600 hover:underline">
+PDF
+</button>
+</td>
+</tr>
+`;
+});
+}
+
+/* ========================= MODAL VIEW ========================= */
 function openModal(index){
 
-  const q = globalQueries[index];
+const q = globalQueries[index];
 
-  document.getElementById("modalContent").innerHTML = `
-    <h3 class="text-lg font-semibold mb-2">
-      Ticket: ${q.ticket_number}
-    </h3>
-    <p><strong>Category:</strong> ${q.category}</p>
-    <p><strong>Status:</strong> ${q.status}</p>
-    <p><strong>Created:</strong>
-      ${new Date(q.created_at).toLocaleString()}
-    </p>
-    <p class="mt-3">
-      <strong>Description:</strong><br>
-      ${q.detailed_description || "No description provided"}
-    </p>
-  `;
+document.getElementById("modalContent").innerHTML = `
 
-  document.getElementById("modal").classList.remove("hidden");
+<div class="border-2 border-black p-5 text-sm">
+
+<div class="text-center font-bold text-lg underline">
+Electronic Service Slip (ESS)
+</div>
+
+<div class="grid grid-cols-2 gap-4 mt-4">
+<div>
+<p><strong>Ticket ID:</strong> ${q.ticket_number}</p>
+<p><strong>Category:</strong> ${q.category}</p>
+<p><strong>Status:</strong> ${q.status}</p>
+</div>
+
+<div>
+<p><strong>Created:</strong>
+${new Date(q.created_at).toLocaleString()}</p>
+<p><strong>Client:</strong> ${q.client_email}</p>
+</div>
+</div>
+
+<hr class="my-4 border-black"/>
+
+<div>
+<strong>Description:</strong>
+<div class="border p-3 mt-2 bg-gray-50">
+${q.detailed_description || "No description provided"}
+</div>
+</div>
+
+<hr class="my-4 border-black"/>
+
+<div class="flex justify-between mt-6">
+<div>
+__________________________<br>
+Authorized Signature
+</div>
+
+<div>
+__________________________<br>
+Client Signature
+</div>
+</div>
+
+</div>
+`;
+
+document.getElementById("modal").classList.remove("hidden");
 }
 
 function closeModal(){
-  document.getElementById("modal").classList.add("hidden");
+document.getElementById("modal").classList.add("hidden");
 }
 
+/* ========================= PROFESSIONAL PDF ========================= */
 function downloadPDF(index){
 
-  const q = globalQueries[index];
-  const doc = new jsPDF();
+const q = globalQueries[index];
+const doc = new jsPDF();
 
-  doc.setFontSize(16);
-  doc.text("TechRescue Ticket", 20, 20);
+doc.setLineWidth(1);
+doc.rect(10, 10, 190, 277); // border
 
-  doc.setFontSize(12);
-  doc.text("Ticket ID: " + q.ticket_number, 20, 40);
-  doc.text("Category: " + q.category, 20, 50);
-  doc.text("Status: " + q.status, 20, 60);
-  doc.text("Created: " +
-    new Date(q.created_at).toLocaleString(), 20, 70);
+doc.setFontSize(16);
+doc.setFont(undefined, "bold");
+doc.text("Electronic Service Slip (ESS)", 50, 25);
 
-  doc.text("Description:", 20, 85);
-  doc.text(q.detailed_description || "N/A", 20, 95, {
-    maxWidth: 170
-  });
+doc.setFont(undefined, "normal");
+doc.setFontSize(12);
 
-  doc.save(q.ticket_number + ".pdf");
+doc.line(10, 35, 200, 35);
+
+doc.text("Ticket ID: " + q.ticket_number, 20, 50);
+doc.text("Category: " + q.category, 20, 60);
+doc.text("Status: " + q.status, 20, 70);
+doc.text("Created: " +
+new Date(q.created_at).toLocaleString(), 20, 80);
+
+doc.line(10, 95, 200, 95);
+
+doc.setFont(undefined, "bold");
+doc.text("Description:", 20, 110);
+
+doc.setFont(undefined, "normal");
+doc.text(
+q.detailed_description || "N/A",
+20,
+120,
+{ maxWidth: 170 }
+);
+
+// Signature section
+doc.line(20, 240, 80, 240);
+doc.text("Authorized Signature", 20, 250);
+
+doc.line(120, 240, 180, 240);
+doc.text("Client Signature", 120, 250);
+
+doc.setFontSize(9);
+doc.text("TechRescue Confidential Document", 60, 275);
+
+doc.save(q.ticket_number + ".pdf");
 }
 
+/* ========================= SEARCH ========================= */
 function applySearch(){
-  const text =
-    document.getElementById("searchInput")
-    .value.toLowerCase();
+const text =
+document.getElementById("searchInput").value.toLowerCase();
 
-  const rows =
-    document.querySelectorAll("#queryTable tr");
+const rows =
+document.querySelectorAll("#queryTable tr");
 
-  rows.forEach(row => {
-    const content = row.innerText.toLowerCase();
-    row.style.display =
-      content.includes(text) ? "" : "none";
-  });
+rows.forEach(row => {
+const content = row.innerText.toLowerCase();
+row.style.display =
+content.includes(text) ? "" : "none";
+});
 }
 
 loadQueryHistory();
 
 </script>
 
-<div id="modal"
-     class="fixed inset-0 bg-black bg-opacity-50 hidden
-            flex items-center justify-center">
-
-  <div class="bg-white p-6 rounded shadow-lg w-96 relative">
-
-    <button onclick="closeModal()"
-            class="absolute top-2 right-3 text-gray-600 text-lg">
-      ✖
-    </button>
-
-    <div id="modalContent"></div>
-
-  </div>
-</div>
-
-  
 </body>
 </html>
-
-
