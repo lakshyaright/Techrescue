@@ -15,7 +15,6 @@ app.use(express.urlencoded({ extended: true }));
 /* =========================
    SUPABASE CONNECTION
 ========================= */
-const supabase = createClient(
   "https://ailgygurihwgmbzxugrs.supabase.co",
   "sb_publishable_N_Drsk0j2uNXubC89iP__Q_G44AwRLl"
 );
