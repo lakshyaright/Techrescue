@@ -8,181 +8,142 @@
 </head>
 <body class="bg-gray-100">
 
-  <!-- Header -->
-  <header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
-    <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
-    <div class="flex items-center space-x-4">
-      <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">JD</div>
-      <span>John Doe</span>
+<header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
+  <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
+  <div class="flex items-center space-x-4">
+    <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">
+      JD
     </div>
-  </header>
+    <span>John Doe</span>
+  </div>
+</header>
 
-  <!-- Navigation Tabs -->
-  <nav class="bg-white shadow flex space-x-4 px-6 py-2 border-b text-sm font-medium">
-    <a href="client.html" class="text-gray-600 hover:text-blue-600 py-2">Dashboard</a>
-    <a href="raise-query.html" class="text-gray-600 hover:text-blue-600 py-2">Raise Query</a>
-    <a href="align-experts.html" class="text-gray-600 hover:text-blue-600 py-2">Align Experts</a>
-    <a href="field-engineers.html" class="text-blue-600 border-b-2 border-blue-600 py-2">Field Engineers</a>
-    <a href="query-history.html" class="text-gray-600 hover:text-blue-600 py-2">Query History</a>
-    <a href="recent-activity.html" class="text-gray-600 hover:text-blue-600 py-2">Recent Activity</a>
-  </nav>
+<nav class="bg-white shadow flex space-x-4 px-6 py-2 border-b text-sm font-medium">
+  <a href="client.html" class="text-gray-600 hover:text-blue-600 py-2">Dashboard</a>
+  <a href="raise-query.html" class="text-gray-600 hover:text-blue-600 py-2">Raise Query</a>
+  <a href="align-experts.html" class="text-gray-600 hover:text-blue-600 py-2">Align Experts</a>
+  <a href="field-engineers.html" class="text-blue-600 border-b-2 border-blue-600 py-2">Field Engineers</a>
+  <a href="query-history.html" class="text-gray-600 hover:text-blue-600 py-2">Query History</a>
+  <a href="recent-activity.html" class="text-gray-600 hover:text-blue-600 py-2">Recent Activity</a>
+</nav>
 
-  <!-- Main Content -->
-  <main class="p-6 space-y-6">
+<main class="p-6 space-y-6">
 
-    <!-- Section Header -->
-    <section class="bg-white rounded shadow p-4">
-      <h2 class="text-lg font-semibold mb-1">Field Engineers</h2>
-      <p class="text-gray-500">Find and align certified field engineers across India for on-site support.</p>
-    </section>
+<section class="bg-white rounded shadow p-4">
+  <h2 class="text-lg font-semibold mb-1">Field Engineers</h2>
+  <p class="text-gray-500">
+    Find certified field engineers for on-site support.
+  </p>
+</section>
 
-    <!-- Filters -->
-    <section class="bg-white rounded shadow p-4 flex flex-wrap gap-4 items-center">
-      <input id="searchInput" type="text" placeholder="Search by name or skill..." class="border border-gray-300 rounded px-3 py-2 w-full md:w-1/3" />
-      <select id="locationFilter" class="border border-gray-300 rounded px-3 py-2">
-        <option value="">Location</option>
-        <option value="Mumbai">Mumbai</option>
-        <option value="Pune">Pune</option>
-        <option value="Bengaluru">Bengaluru</option>
-      </select>
-      <select id="availabilityFilter" class="border border-gray-300 rounded px-3 py-2">
-        <option value="">Availability</option>
-        <option value="Available">Available</option>
-        <option value="Away">Away</option>
-      </select>
-      <select id="skillFilter" class="border border-gray-300 rounded px-3 py-2">
-        <option value="">Skill</option>
-        <option value="Networking">Networking</option>
-        <option value="Hardware">Hardware</option>
-        <option value="Cloud">Cloud</option>
-        <option value="Software">Software</option>
-      </select>
-      <button onclick="applyFilters()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
-      <button onclick="resetFilters()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">Reset</button>
-    </section>
+<section class="bg-white rounded shadow p-4 flex flex-wrap gap-4 items-center">
 
-    <!-- Engineer Cards -->
-    <section id="engineerList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <input id="searchInput"
+         type="text"
+         placeholder="Search by name..."
+         class="border border-gray-300 rounded px-3 py-2" />
 
-      <!-- Engineer 1 -->
-      <div class="engineer bg-white p-4 rounded shadow"
-           data-name="Rajesh Kumar"
-           data-location="Mumbai"
-           data-availability="Available"
-           data-skills="Networking,Hardware,CCTV,Cabling">
-        <h3 class="text-lg font-semibold">Rajesh Kumar</h3>
-        <p class="text-sm text-gray-500">📍 Mumbai, Maharashtra</p>
-        <p class="text-sm">🛠️ Skills: Networking, Hardware, CCTV, Cabling</p>
-        <p class="text-sm">📅 Experience: 5+ years</p>
-        <p class="text-sm">✅ Jobs Completed: 127</p>
-        <p class="text-sm">⭐ Rating: 4.8</p>
-        <div class="mt-3 flex space-x-2">
-          <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Align</button>
-          <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">View Profile</button>
-        </div>
-      </div>
+  <select id="locationFilter"
+          class="border border-gray-300 rounded px-3 py-2">
+    <option value="">All Locations</option>
+    <option value="Mumbai">Mumbai</option>
+    <option value="Pune">Pune</option>
+    <option value="Bengaluru">Bengaluru</option>
+  </select>
 
-      <!-- Engineer 2 -->
-      <div class="engineer bg-white p-4 rounded shadow"
-           data-name="Meera Joshi"
-           data-location="Pune"
-           data-availability="Away"
-           data-skills="Software,Hardware">
-        <h3 class="text-lg font-semibold">Meera Joshi</h3>
-        <p class="text-sm text-gray-500">📍 Pune, Maharashtra</p>
-        <p class="text-sm">🛠️ Skills: Software, Hardware</p>
-        <p class="text-sm">📅 Experience: 3+ years</p>
-        <p class="text-sm">✅ Jobs Completed: 93</p>
-        <p class="text-sm">⭐ Rating: 4.6</p>
-        <div class="mt-3 flex space-x-2">
-          <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Align</button>
-          <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">View Profile</button>
-        </div>
-      </div>
+  <label class="flex items-center gap-2">
+    <input type="checkbox" id="onlineFilter">
+    Online Only
+  </label>
 
-      <!-- Engineer 3 -->
-      <div class="engineer bg-white p-4 rounded shadow"
-           data-name="Amit Verma"
-           data-location="Bengaluru"
-           data-availability="Available"
-           data-skills="Server,Networking,Cloud,Firewall">
-        <h3 class="text-lg font-semibold">Amit Verma</h3>
-        <p class="text-sm text-gray-500">📍 Bengaluru, Karnataka</p>
-        <p class="text-sm">🛠️ Skills: Server, Networking, Cloud, Firewall</p>
-        <p class="text-sm">📅 Experience: 7+ years</p>
-        <p class="text-sm">✅ Jobs Completed: 142</p>
-        <p class="text-sm">⭐ Rating: 4.9</p>
-        <div class="mt-3 flex space-x-2">
-          <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Align</button>
-          <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">View Profile</button>
-        </div>
-      </div>
-      <div id="engineerList"></div>
+  <button onclick="loadEngineers()"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    Apply
+  </button>
+
+</section>
+
+<section id="engineerContainer"
+         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+</section>
+
+</main>
 
 <script>
-async function loadEngineers() {
-  const res = await fetch("https://techrescue.onrender.com/engineers");
-  const engineers = await res.json();
 
-  const container = document.getElementById("engineerList");
+async function loadEngineers(){
+
+  const search = document.getElementById("searchInput").value;
+  const location = document.getElementById("locationFilter").value;
+  const online = document.getElementById("onlineFilter").checked;
+
+  const queryParams = new URLSearchParams({
+    search,
+    location,
+    online
+  });
+
+  const res = await fetch(
+    "https://techrescue.onrender.com/field-engineers?" + queryParams
+  );
+
+  const engineers = await res.json();
+  const container = document.getElementById("engineerContainer");
   container.innerHTML = "";
 
-  if (engineers.length === 0) {
-    container.innerHTML = "<p>No engineers registered yet</p>";
+  if (!engineers || engineers.length === 0) {
+    container.innerHTML =
+      "<p class='text-gray-500'>No field engineers found.</p>";
     return;
   }
 
   engineers.forEach(e => {
+
+    const profile = e.engineer_profiles?.[0] || {};
+
     container.innerHTML += `
-      <div class="bg-white p-4 rounded shadow mb-3">
-        <h3 class="font-semibold">${e.name}</h3>
-        <p>Skill: ${e.skill}</p>
-        <p>Location: ${e.location}</p>
-        <p>Status: ${e.availability}</p>
+      <div class="bg-white p-5 rounded shadow">
+
+        <h3 class="text-lg font-semibold">
+          ${e.first_name} ${e.last_name}
+        </h3>
+
+        <p class="text-sm text-gray-600">
+          📍 ${e.state || ""}, ${e.country || ""}
+        </p>
+
+        <p class="text-sm mt-2">
+          🛠️ Skills: ${(profile.categories || []).join(", ")}
+        </p>
+
+        <p class="text-sm">
+          📅 Experience: ${profile.experience || "N/A"}
+        </p>
+
+        <p class="mt-2 font-semibold ${
+          e.online ? "text-green-600" : "text-red-600"
+        }">
+          ${e.online ? "Available" : "Offline"}
+        </p>
+
+        <div class="mt-4 flex gap-2">
+          <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Align
+          </button>
+          <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
+            View Profile
+          </button>
+        </div>
+
       </div>
     `;
   });
+
 }
 
 loadEngineers();
+
 </script>
-
-
-    </section>
-  </main>
-
-  <!-- JavaScript for Filtering -->
-  <script>
-    function applyFilters() {
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      const location = document.getElementById('locationFilter').value;
-      const availability = document.getElementById('availabilityFilter').value;
-      const skill = document.getElementById('skillFilter').value;
-
-      document.querySelectorAll('.engineer').forEach(card => {
-        const name = card.dataset.name.toLowerCase();
-        const loc = card.dataset.location;
-        const avail = card.dataset.availability;
-        const skills = card.dataset.skills.toLowerCase();
-
-        const matchesSearch = name.includes(search) || skills.includes(search);
-        const matchesLocation = !location || loc === location;
-        const matchesAvailability = !availability || avail === availability;
-        const matchesSkill = !skill || skills.includes(skill.toLowerCase());
-
-        card.style.display = (matchesSearch && matchesLocation && matchesAvailability && matchesSkill) ? 'block' : 'none';
-      });
-    }
-
-    function resetFilters() {
-      document.getElementById('searchInput').value = '';
-      document.getElementById('locationFilter').value = '';
-      document.getElementById('availabilityFilter').value = '';
-      document.getElementById('skillFilter').value = '';
-      applyFilters();
-    }
-  </script>
 
 </body>
 </html>
-
