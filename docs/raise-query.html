@@ -1,135 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Raise Query - TechRescue</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Raise Query - TechRescue</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100">
 
-  <!-- Header -->
-  <header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
-    <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
-    <div class="flex items-center space-x-4">
-      <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">JD</div>
-      <span>John Doe</span>
+<!-- Header -->
+<header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
+  <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
+  <div class="flex items-center space-x-4">
+    <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">
+      <span id="avatar">JD</span>
     </div>
-  </header>
+    <span id="clientName">Client</span>
+  </div>
+</header>
 
-  <!-- Navigation Tabs -->
-  <nav class="bg-white shadow flex space-x-4 px-6 py-2 border-b text-sm font-medium">
-    <a href="client.html" class="text-gray-600 hover:text-blue-600 py-2">Dashboard</a>
-    <a href="raise-query.html" class="text-blue-600 border-b-2 border-blue-600 py-2">Raise Query</a>
-    <a href="align-experts.html" class="text-gray-600 hover:text-blue-600 py-2">Align Experts</a>
-    <a href="field-engineers.html" class="text-gray-600 hover:text-blue-600 py-2">Field Engineers</a>
-    <a href="query-history.html" class="text-gray-600 hover:text-blue-600 py-2">Query History</a>
-    <a href="recent-activity.html" class="text-gray-600 hover:text-blue-600 py-2">Recent Activity</a>
-  </nav>
+<!-- Navigation -->
+<nav class="bg-white shadow flex space-x-4 px-6 py-2 border-b text-sm font-medium">
+  <a href="client.html" class="text-gray-600 hover:text-blue-600 py-2">Dashboard</a>
+  <a href="raise-query.html" class="text-blue-600 border-b-2 border-blue-600 py-2">Raise Query</a>
+  <a href="align-experts.html" class="text-gray-600 hover:text-blue-600 py-2">Align Experts</a>
+  <a href="field-engineers.html" class="text-gray-600 hover:text-blue-600 py-2">Field Engineers</a>
+  <a href="query-history.html" class="text-gray-600 hover:text-blue-600 py-2">Query History</a>
+</nav>
 
-  <!-- Main Content -->
-  <main class="p-6 space-y-6">
+<main class="p-6 space-y-6">
 
-    <!-- Page Title -->
-    <section class="bg-white rounded shadow p-4">
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-lg font-semibold mb-1">Raise Query</h2>
-          <p class="text-gray-500 text-sm">Submit a new technical support query</p>
-        </div>
-        <div class="flex space-x-3">
-          <button class="text-sm text-blue-600 hover:underline">View Previous Queries</button>
-          <button class="text-sm text-blue-600 hover:underline">Saved Drafts (2)</button>
-        </div>
-      </div>
-    </section>
+<section class="bg-white rounded shadow p-6 space-y-6">
 
-    <!-- Step Indicator -->
-    <section class="bg-white rounded shadow p-4">
-      <div class="flex space-x-4 text-sm text-gray-600">
-        <span class="font-semibold text-blue-600">1. Query Details</span>
-        <span>→ 2. Additional Info</span>
-        <span>→ 3. Review & Submit</span>
-      </div>
-    </section>
+<h2 class="text-lg font-semibold">Raise New Query</h2>
 
-    <!-- Query Form -->
-    <section class="bg-white rounded shadow p-6 space-y-6">
-      <!-- Query Title -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Query Title</label>
-        <input type="text" placeholder="Brief description of your issue"
-               class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-      </div>
+<form id="raiseForm" class="space-y-6">
 
-      <!-- Category Selection -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Category Cards -->
-          <div class="border rounded p-4 hover:border-blue-500 cursor-pointer">
-            <div class="flex items-center space-x-3">
-              <span class="text-blue-600 text-xl">🖥️</span>
-              <div>
-                <h3 class="font-semibold text-gray-800">Hardware</h3>
-                <p class="text-sm text-gray-500">Server, PC, Peripherals</p>
-              </div>
-            </div>
-          </div>
-          <div class="border rounded p-4 hover:border-blue-500 cursor-pointer">
-            <div class="flex items-center space-x-3">
-              <span class="text-blue-600 text-xl">☁️</span>
-              <div>
-                <h3 class="font-semibold text-gray-800">Cloud</h3>
-                <p class="text-sm text-gray-500">AWS, Azure, Google Cloud</p>
-              </div>
-            </div>
-          </div>
-          <div class="border rounded p-4 hover:border-blue-500 cursor-pointer">
-            <div class="flex items-center space-x-3">
-              <span class="text-blue-600 text-xl">🌐</span>
-              <div>
-                <h3 class="font-semibold text-gray-800">Network</h3>
-                <p class="text-sm text-gray-500">Connectivity, Router, Switch</p>
-              </div>
-            </div>
-          </div>
-          <div class="border rounded p-4 hover:border-blue-500 cursor-pointer">
-            <div class="flex items-center space-x-3">
-              <span class="text-blue-600 text-xl">🔒</span>
-              <div>
-                <h3 class="font-semibold text-gray-800">Security</h3>
-                <p class="text-sm text-gray-500">Firewall, Threats, Access</p>
-              </div>
-            </div>
-          </div>
-          <div class="border rounded p-4 hover:border-blue-500 cursor-pointer">
-            <div class="flex items-center space-x-3">
-              <span class="text-blue-600 text-xl">💾</span>
-              <div>
-                <h3 class="font-semibold text-gray-800">Software</h3>
-                <p class="text-sm text-gray-500">Applications, OS, Services</p>
-              </div>
-            </div>
-          </div>
-          <div class="border rounded p-4 hover:border-blue-500 cursor-pointer">
-            <div class="flex items-center space-x-3">
-              <span class="text-blue-600 text-xl">❓</span>
-              <div>
-                <h3 class="font-semibold text-gray-800">Other</h3>
-                <p class="text-sm text-gray-500">Miscellaneous Issues</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<!-- Title -->
+<div>
+<label class="block text-sm font-medium mb-1">Short Description</label>
+<input id="short_description"
+type="text"
+required
+class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500"
+placeholder="Outlook not opening, error code 0x80040154"/>
+</div>
 
-      <!-- Next Button -->
-      <div class="flex justify-end">
-        <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Next</button>
-      </div>
-    </section>
-  </main>
+<!-- Category -->
+<div>
+<label class="block text-sm font-medium mb-1">Category</label>
+<select id="category"
+required
+class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500">
+<option value="">Select Category</option>
+<option>Hardware</option>
+<option>Software</option>
+<option>Application</option>
+<option>Network</option>
+<option>Security</option>
+<option>Cloud</option>
+</select>
+</div>
+
+<!-- Subcategory -->
+<div>
+<label class="block text-sm font-medium mb-1">Subcategory</label>
+<select id="subcategory"
+required
+class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500">
+<option value="">Select Subcategory</option>
+<option>Outlook</option>
+<option>Excel</option>
+<option>Word</option>
+<option>Teams</option>
+<option>Chrome</option>
+<option>Edge</option>
+<option>Tally ERP9</option>
+<option>Router</option>
+<option>Firewall</option>
+</select>
+</div>
+
+<!-- Impact & Urgency -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+<div>
+<label class="block text-sm font-medium mb-1">Impact</label>
+<select id="impact"
+required
+class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500">
+<option value="">Select Impact</option>
+<option>Single User</option>
+<option>Multiple Users</option>
+<option>Organization</option>
+</select>
+</div>
+
+<div>
+<label class="block text-sm font-medium mb-1">Urgency</label>
+<select id="urgency"
+required
+class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500">
+<option value="">Select Urgency</option>
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+</div>
+
+</div>
+
+<!-- Detailed Description -->
+<div>
+<label class="block text-sm font-medium mb-1">Detailed Description</label>
+<textarea id="detailed_description"
+class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500"
+rows="4"
+placeholder="Explain issue clearly, what you tried, error messages etc"></textarea>
+</div>
+
+<!-- Assignment Group -->
+<div>
+<label class="block text-sm font-medium mb-1">Assignment Group</label>
+<select id="assignment_group"
+class="w-full border rounded px-4 py-2 focus:ring-2 focus:ring-blue-500">
+<option>Application Support</option>
+<option>Network Support</option>
+<option>Email Support</option>
+<option>Cloud Support</option>
+</select>
+</div>
+
+<!-- Submit -->
+<div class="flex justify-end">
+<button type="submit"
+class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+Submit Ticket
+</button>
+</div>
+
+</form>
+
+</section>
+</main>
+
+<script>
+const token = localStorage.getItem("token");
+
+if(!token){
+  window.location.href="Login.html";
+}
+
+document.getElementById("raiseForm")
+.addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const data = {
+    category: category.value,
+    subcategory: subcategory.value,
+    impact: impact.value,
+    urgency: urgency.value,
+    short_description: short_description.value,
+    detailed_description: detailed_description.value,
+    assignment_group: assignment_group.value
+  };
+
+  const res = await fetch(
+    "https://techrescue.onrender.com/raise-query",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+token
+      },
+      body: JSON.stringify(data)
+    }
+  );
+
+  const result = await res.json();
+
+  if(res.ok){
+    alert("Ticket Created: " + result.ticket_number);
+    window.location.href="client.html";
+  }else{
+    alert("Error creating ticket");
+  }
+});
+</script>
 
 </body>
 </html>
