@@ -674,6 +674,75 @@ app.get("/client-dashboard", async (req, res) => {
 });
 
 /* =========================
+   GET ALL EXPERTS (JOIN)
+========================= */
+app.get("/experts", async (req, res) => {
+  try {
+
+    const { data, error } = await supabase
+      .from("engineers")
+      .select(`
+        id,
+        first_name,
+        last_name,
+        email,
+        country,
+        state,
+        online,
+        engineer_profiles (
+          role,
+          experience,
+          summary
+        )
+      `);
+
+    if (error) throw error;
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch experts" });
+  }
+});
+
+
+/* =========================
+   GET FIELD ENGINEERS
+========================= */
+app.get("/field-engineers", async (req, res) => {
+  try {
+
+    const { data, error } = await supabase
+      .from("engineers")
+      .select(`
+        id,
+        first_name,
+        last_name,
+        email,
+        country,
+        state,
+        online,
+        engineer_profiles (
+          role,
+          experience
+        )
+      `)
+      .eq("engineer_profiles.role", "Field Engineer");
+
+    if (error) throw error;
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch field engineers" });
+  }
+});
+
+
+
+/* =========================
    START SERVER
 ========================= */
 const PORT = process.env.PORT || 10000;
