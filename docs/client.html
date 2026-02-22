@@ -209,20 +209,7 @@ async function loadClientDashboard(){
     ((data.resolved/total)*100).toFixed(0)+"%";
 
   // Chart
-
-  document.getElementById('openCount').innerText = data.open;
-  document.getElementById('inProgressCount').innerText = data.inProgress;
-  document.getElementById('resolvedCount').innerText = data.resolved;
-
- const total = data.total || 1;
-
-  document.getElementById('openPct').innerText =
-    ((data.open/total)*100).toFixed(0)+"%";
-    document.getElementById('inProgressPct').innerText =
-    ((data.inProgress/total)*100).toFixed(0)+"%";
-  document.getElementById('resolvedPct').innerText =
-    ((data.resolved/total)*100).toFixed(0)+"%";
-  
+ 
   const ctx = document.getElementById('overviewChart').getContext('2d');
 
   new Chart(ctx, {
@@ -266,5 +253,6 @@ loadClientDashboard();
 
 </body>
 </html>
+
 
 
