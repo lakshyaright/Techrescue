@@ -27,6 +27,10 @@ app.get("/", (req, res) => {
   res.send("TechRescue Backend Running with Database ✅");
 });
 
+
+app.get("/test", (req, res) => {
+  res.send("Test route working");
+});
 /* =========================
    GET ALL ENGINEERS (DB)
 ========================= */
