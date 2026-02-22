@@ -553,6 +553,66 @@ app.get("/dashboard-data", async (req, res) => {
     res.status(500).json({ error: "Dashboard load failed" });
   }
 });
+
+   /* =========================
+   RAISE QUERY (PRO LEVEL)
+========================= */
+app.post("/raise-query", async (req, res) => {
+  try {
+
+    const token = req.headers.authorization?.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+    const email = decoded.email;
+
+    const {
+      category,
+      subcategory,
+      impact,
+      urgency,
+      short_description,
+      detailed_description,
+      assignment_group
+    } = req.body;
+
+    // 🔥 Priority Logic
+    let priority = "P4";
+
+    if (impact === "Organization" && urgency === "High") priority = "P1";
+    else if (impact === "Multiple Users" && urgency === "High") priority = "P2";
+    else if (impact === "Single User" && urgency === "Medium") priority = "P3";
+
+    // 🔥 Generate Ticket Number
+    const ticketNumber = "INC" + Date.now();
+
+    const { error } = await supabase
+      .from("queries")
+      .insert([
+        {
+          ticket_number: ticketNumber,
+          client_email: email,
+          category,
+          subcategory,
+          impact,
+          urgency,
+          priority,
+          short_description,
+          detailed_description,
+          assignment_group
+        }
+      ]);
+
+    if (error) throw error;
+
+    res.json({
+      message: "Ticket created successfully",
+      ticket_number: ticketNumber
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to create ticket" });
+  }
+});
 /* =========================
    START SERVER
 ========================= */
