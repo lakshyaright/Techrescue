@@ -154,8 +154,54 @@
         .forEach(id => document.getElementById(id).value = '');
       applyFilters();
     }
+
+async function loadExperts(){
+
+  const res = await fetch("https://techrescue.onrender.com/experts");
+  const experts = await res.json();
+
+  const container = document.getElementById("expertsContainer");
+  container.innerHTML = "";
+
+  experts.forEach(exp => {
+
+    const profile = exp.engineer_profiles?.[0];
+
+    container.innerHTML += `
+      <div class="bg-white shadow rounded p-4">
+        <h3 class="font-semibold text-lg">
+          ${exp.first_name} ${exp.last_name}
+        </h3>
+
+        <p class="text-sm text-gray-600">${exp.email}</p>
+
+        <p class="text-sm">
+          ${exp.country || ""} ${exp.state || ""}
+        </p>
+
+        <p class="text-sm mt-2">
+          Role: ${profile?.role || "Not Defined"}
+        </p>
+
+        <p class="text-sm">
+          Experience: ${profile?.experience || "N/A"}
+        </p>
+
+        <p class="${
+          exp.online ? "text-green-600" : "text-red-600"
+        } font-semibold mt-2">
+          ${exp.online ? "Online" : "Offline"}
+        </p>
+      </div>
+    `;
+  });
+}
+
+loadExperts();
+    
   </script>
 
 </body>
 </html>
+
 ```
