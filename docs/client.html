@@ -9,6 +9,20 @@
 </head>
 <body class="bg-gray-100">
 
+<script>
+const token = localStorage.getItem("token");
+
+if (!token) {
+  window.location.href = "Login.html";
+}
+
+const decoded = JSON.parse(atob(token.split(".")[1]));
+
+if (decoded.role !== "client") {
+  window.location.href = "Login.html";
+}
+</script>
+  
   <!-- Top Nav -->
   <header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
     <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
@@ -252,6 +266,7 @@ loadClientDashboard();
 
 </body>
 </html>
+
 
 
 
