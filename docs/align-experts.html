@@ -8,30 +8,32 @@
 </head>
 <body class="bg-gray-100">
 
-  <!-- Header -->
-  <header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
-    <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
-    <div class="flex items-center space-x-4">
-      <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">
-        JD
-      </div>
-      <span>John Doe</span>
+<header class="bg-blue-600 text-white flex justify-between items-center px-6 py-4">
+  <h1 class="text-xl font-semibold">TechRescue - Client Dashboard</h1>
+  <div class="flex items-center space-x-4">
+    <div class="bg-white text-blue-600 font-bold rounded-full w-8 h-8 flex items-center justify-center">
+      JD
     </div>
-  </header>
+    <span>John Doe</span>
+  </div>
+</header>
 
-  <!-- Navigation -->
-  <nav class="bg-white shadow flex space-x-4 px-6 py-2 border-b text-sm font-medium">
-    <a href="client.html" class="text-gray-600 hover:text-blue-600 py-2">Dashboard</a>
-    <a href="raise-query.html" class="text-gray-600 hover:text-blue-600 py-2">Raise Query</a>
-    <a href="align-experts.html" class="text-blue-600 border-b-2 border-blue-600 py-2">Align Experts</a>
-    <a href="field-engineers.html" class="text-gray-600 hover:text-blue-600 py-2">Field Engineers</a>
-    <a href="query-history.html" class="text-gray-600 hover:text-blue-600 py-2">Query History</a>
-    <a href="recent-activity.html" class="text-gray-600 hover:text-blue-600 py-2">Recent Activity</a>
-  </nav>
+<nav class="bg-white shadow flex space-x-4 px-6 py-2 border-b text-sm font-medium">
+  <a href="client.html" class="text-gray-600 hover:text-blue-600 py-2">Dashboard</a>
+  <a href="raise-query.html" class="text-gray-600 hover:text-blue-600 py-2">Raise Query</a>
+  <a href="align-experts.html" class="text-blue-600 border-b-2 border-blue-600 py-2">Align Experts</a>
+  <a href="field-engineers.html" class="text-gray-600 hover:text-blue-600 py-2">Field Engineers</a>
+  <a href="query-history.html" class="text-gray-600 hover:text-blue-600 py-2">Query History</a>
+  <a href="recent-activity.html" class="text-gray-600 hover:text-blue-600 py-2">Recent Activity</a>
+</nav>
 
-  <main class="p-6 space-y-6">
+<main class="p-6 space-y-6">
 
-    <!-- Section Header -->
+<section class="bg-white rounded shadow p-4">
+  <h2 class="text-lg font-semibold mb-1">Align Experts</h2>
+  <p class="text-gray-500">Search and filter certified experts.</p>
+</section>
+
 <section class="bg-white rounded shadow p-4 flex flex-wrap gap-4 items-center">
 
   <input id="searchInput"
@@ -65,8 +67,13 @@
     Apply
   </button>
 
-</section>  
-  </main>
+</section>
+
+<section id="expertsContainer"
+         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+</section>
+
+</main>
 
 <script>
 
@@ -92,7 +99,7 @@ async function loadExperts(){
   const container = document.getElementById("expertsContainer");
   container.innerHTML = "";
 
-  if (!experts.length) {
+  if (!experts || experts.length === 0) {
     container.innerHTML =
       "<p class='text-gray-500'>No experts found.</p>";
     return;
@@ -106,7 +113,7 @@ async function loadExperts(){
       <div class="bg-white shadow rounded p-5">
 
         <h3 class="text-lg font-semibold">
-          ${exp.first_name} ${exp.last_name}
+          ${exp.first_name || ""} ${exp.last_name || ""}
         </h3>
 
         <p class="text-sm text-gray-600">${exp.email}</p>
@@ -140,9 +147,8 @@ async function loadExperts(){
 }
 
 loadExperts();
-  
+
 </script>
 
 </body>
 </html>
-
