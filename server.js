@@ -53,54 +53,49 @@ app.get("/engineers", async (req, res) => {
 /* =========================
    ADD ENGINEER (REGISTER)
 ========================= */
-app.post("//signup", async (req, res) => {
+
+app.post("/signup", async (req, res) => {
   try {
-    console.log("BODY =>", req.body);
+
+    console.log("SIGNUP HIT");
 
     const { first_name, last_name, email, password, country, state, role } = req.body;
 
-    // Required fields
-    if (!first_name || !email || !password) {
+    if (!first_name || !email || !password || !role) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // 🔎 Check if email already exists
-    const { data: existingUser, error: fetchError } = await supabase
+    const { data: existingUser } = await supabase
       .from("engineers")
       .select("id")
       .eq("email", email)
-      .maybeSingle();   // 👈 safer than single()
-
-    if (fetchError) throw fetchError;
+      .maybeSingle();
 
     if (existingUser) {
-      return res.json({ status: "exists" });
+      return res.status(400).json({ error: "Email already registered" });
     }
 
-    // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    // ✅ Insert new engineer
+
     const { error } = await supabase
       .from("engineers")
-      .insert([
-        {
-          first_name,
-          last_name,
-          email,
-          password: hashedPassword,
-          role,
-          country,
-          state
-        }
-      ]);
+      .insert([{
+        first_name,
+        last_name,
+        email,
+        password: hashedPassword,
+        role,
+        country,
+        state
+      }]);
 
     if (error) throw error;
 
     res.json({ status: "success" });
 
   } catch (err) {
-    console.error("ADD ENGINEER ERROR:", err);
-    res.status(500).json({ error: "Failed to add engineer" });
+    console.error("SIGNUP ERROR:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
