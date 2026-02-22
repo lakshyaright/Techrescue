@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Engineer Signup - TechRescue</title>
+<title>Signup - TechRescue</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -12,8 +12,22 @@
 <div class="bg-white shadow-lg rounded-xl w-full max-w-lg p-8">
 
 <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">
-Create Engineer Account
+Create Your Account
 </h2>
+
+<!-- ROLE SELECTOR -->
+<div class="flex justify-center mb-6">
+    <button type="button" id="clientTab"
+        class="px-6 py-2 rounded-l-lg bg-blue-600 text-white">
+        Client
+    </button>
+    <button type="button" id="expertTab"
+        class="px-6 py-2 rounded-r-lg bg-gray-200">
+        Expert
+    </button>
+</div>
+
+<input type="hidden" id="role" value="client">
 
 <form id="signupForm" class="space-y-4">
 
@@ -25,7 +39,9 @@ Create Engineer Account
 <input type="email" id="email" placeholder="Email ID" class="w-full border rounded-lg p-2" required>
 <input type="password" id="password" placeholder="Password" class="w-full border rounded-lg p-2" required>
 
-<select id="country" class="w-full border rounded-lg p-2" required>
+<!-- Expert Only Fields -->
+<div id="expertFields" class="space-y-4 hidden">
+<select id="country" class="w-full border rounded-lg p-2">
 <option value="">Select Country</option>
 <option>India</option>
 <option>USA</option>
@@ -34,13 +50,14 @@ Create Engineer Account
 <option>Australia</option>
 </select>
 
-<select id="state" class="w-full border rounded-lg p-2" required>
+<select id="state" class="w-full border rounded-lg p-2">
 <option value="">Select State</option>
 <option>Uttar Pradesh</option>
 <option>Delhi</option>
 <option>Haryana</option>
 <option>Maharashtra</option>
 </select>
+</div>
 
 <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
 Create Account
@@ -53,22 +70,49 @@ Create Account
 </div>
 
 <script>
+
+// ROLE SWITCH LOGIC
+const clientTab = document.getElementById("clientTab");
+const expertTab = document.getElementById("expertTab");
+const roleInput = document.getElementById("role");
+const expertFields = document.getElementById("expertFields");
+
+clientTab.onclick = () => {
+    roleInput.value = "client";
+    clientTab.classList.add("bg-blue-600","text-white");
+    expertTab.classList.remove("bg-blue-600","text-white");
+    expertTab.classList.add("bg-gray-200");
+    expertFields.classList.add("hidden");
+};
+
+expertTab.onclick = () => {
+    roleInput.value = "expert";
+    expertTab.classList.add("bg-blue-600","text-white");
+    clientTab.classList.remove("bg-blue-600","text-white");
+    clientTab.classList.add("bg-gray-200");
+    expertFields.classList.remove("hidden");
+};
+
+// SIGNUP SUBMIT
 document.getElementById("signupForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
     let messageBox = document.getElementById("message");
+
+    const role = roleInput.value;
 
     const data = {
         first_name: document.getElementById("firstName").value,
         last_name: document.getElementById("lastName").value,
         email: document.getElementById("email").value,
         password: document.getElementById("password").value,
-        country: document.getElementById("country").value,
-        state: document.getElementById("state").value
+        country: role === "expert" ? document.getElementById("country").value : null,
+        state: role === "expert" ? document.getElementById("state").value : null,
+        role: role
     };
 
     try {
-        const res = await fetch("https://techrescue.onrender.com/add-engineer", {
+        const res = await fetch("https://techrescue.onrender.com/signup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -78,32 +122,16 @@ document.getElementById("signupForm").addEventListener("submit", async function(
 
         const result = await res.json();
 
-        /* EMAIL ALREADY EXISTS */
-        if(result.status === "exists"){
-            messageBox.innerHTML = `
-                <span class="text-red-600">⚠️ Account already exists</span><br>
-                <a href="reset-password.html?email=${data.email}" 
-                   class="text-blue-600 underline">
-                   Reset Password
-                </a>
-            `;
-            return;
-        }
-
-        /* SUCCESS */
-        if(result.status === "success"){
+        if(res.ok){
             messageBox.innerHTML =
-                '<span class="text-green-600">🎉 Congratulations! Your account is created.</span>';
+                '<span class="text-green-600">🎉 Account created successfully!</span>';
 
             setTimeout(()=>{
-                window.location.href = "welcome-questions.html";
+                window.location.href = "Login.html";
             },1500);
-        }
-
-        /* ERROR */
-        if(result.status === "error"){
+        } else {
             messageBox.innerHTML =
-                '<span class="text-red-600">❌ Registration failed</span>';
+                '<span class="text-red-600">' + result.error + '</span>';
         }
 
     } catch (err) {
