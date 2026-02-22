@@ -815,6 +815,35 @@ app.get("/field-engineers", async (req, res) => {
 });
 
 /* =========================
+   Query history
+========================= */
+
+
+app.get("/query-history", async (req, res) => {
+  try {
+
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "No token" });
+
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { data, error } = await supabase
+      .from("queries")
+      .select("*")
+      .eq("client_email", decoded.email)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load query history" });
+  }
+});
+
+/* =========================
    START SERVER
 ========================= */
 const PORT = process.env.PORT || 10000;
