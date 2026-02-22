@@ -630,6 +630,49 @@ app.post("/raise-query", async (req, res) => {
     res.status(500).json({ error: "Failed to create ticket" });
   }
 });
+
+/* =========================
+   CLIENT DASHBOARD DATA
+========================= */
+app.get("/client-dashboard", async (req, res) => {
+  try {
+
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "No token" });
+
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+    const email = decoded.email;
+
+    const { data: queries, error } = await supabase
+      .from("queries")
+      .select("*")
+      .eq("client_email", email);
+
+    if (error) throw error;
+
+    const total = queries.length;
+    const open = queries.filter(q => q.status === "open").length;
+    const inProgress = queries.filter(q => q.status === "in_progress").length;
+    const resolved = queries.filter(q => q.status === "resolved").length;
+
+    const recent = queries
+      .sort((a,b)=> new Date(b.created_at) - new Date(a.created_at))
+      .slice(0,5);
+
+    res.json({
+      total,
+      open,
+      inProgress,
+      resolved,
+      recent
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Dashboard load failed" });
+  }
+});
+
 /* =========================
    START SERVER
 ========================= */
