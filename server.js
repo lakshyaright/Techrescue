@@ -185,18 +185,24 @@ app.post("/save-profile", async (req, res) => {
 ========================= */
 app.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+
+    const { email, password, role } = req.body;
+
+    if (!email || !password || !role) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
 
     const { data: user, error } = await supabase
       .from("engineers")
       .select("*")
       .eq("email", email)
+      .eq("role", role)   // 🔥 ROLE CHECK ADDED
       .maybeSingle();
 
     if (error) throw error;
 
     if (!user) {
-      return res.status(400).json({ error: "User not found" });
+      return res.status(400).json({ error: "Invalid credentials or role" });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
@@ -206,18 +212,18 @@ app.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role },  // 🔥 ROLE IN TOKEN
       "techrescue_secret_key",
       { expiresIn: "1d" }
     );
 
-    res.json({ status: "success", token });
+    res.json({ status: "success", token, role: user.role });
 
   } catch (err) {
     console.error("LOGIN ERROR:", err);
     res.status(500).json({ error: "Login failed" });
   }
-});
+});   
 
 /* =========================
    GET CURRENT USER (JWT)
