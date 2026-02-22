@@ -692,6 +692,7 @@ app.get("/experts", async (req, res) => {
         email,
         country,
         state,
+        role,
         online,
         engineer_profiles (
           role,
@@ -758,6 +759,7 @@ app.get("/field-engineers", async (req, res) => {
         email,
         country,
         state,
+        role,
         online,
         engineer_profiles (
           role,
