@@ -104,15 +104,16 @@ app.post("/signup", async (req, res) => {
 ========================= */
 app.post("/save-profile", async (req, res) => {
   try {
+    console.log("PROFILE DATA =>", req.body);
 
+    // 🔐 Token verify
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       return res.status(401).json({ error: "No token provided" });
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, "techrescue_secret_key");
-    const email = decoded.email;   // ✅ email from JWT
+const email = req.body.email;
 
     const {
       categories,
@@ -124,28 +125,60 @@ app.post("/save-profile", async (req, res) => {
       summary
     } = req.body;
 
-    const { error } = await supabase
+    // 🔎 Check if profile already exists
+    const { data: existingProfile } = await supabase
       .from("engineer_profiles")
-      .upsert([{
-        email,
-        categories,
-        subskills,
-        manual_skills: manualSkills,
-        role,
-        experience,
-        education,
-        summary
-      }], { onConflict: "email" });
+      .select("*")
+      .eq("email", email)
+      .single();
 
-    if (error) throw error;
+    if (existingProfile) {
+      // 🔁 UPDATE
+      const { error } = await supabase
+        .from("engineer_profiles")
+        .update({
+          categories,
+          subskills,
+          manual_skills: manualSkills,
+          role,
+          experience,
+          education,
+          summary
+        })
+        .eq("email", email);
 
-    res.json({ status: "success" });
+      if (error) throw error;
+
+      return res.json({ status: "updated" });
+    } else {
+      // ➕ INSERT
+      const { error } = await supabase
+        .from("engineer_profiles")
+        .insert([
+          {
+            email,
+            categories,
+            subskills,
+            manual_skills: manualSkills,
+            role,
+            experience,
+            education,
+            summary
+          }
+        ]);
+
+      if (error) throw error;
+
+      return res.json({ status: "created" });
+    }
 
   } catch (err) {
     console.error("SAVE PROFILE ERROR:", err);
     res.status(500).json({ error: "Failed to save profile" });
   }
-});
+});  
+
+
 /* =========================
    LOGIN
 ========================= */
