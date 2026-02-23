@@ -178,6 +178,7 @@ if(!email){
   const subskills = [...document.querySelectorAll('input[name="subskills"]:checked')].map(e=>e.value);
 
   const data = {
+    email: email,
     categories,
     subskills,
     manualSkills: document.getElementById("manualSkills").value,
