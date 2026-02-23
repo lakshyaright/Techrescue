@@ -648,11 +648,13 @@ app.get("/client-dashboard", async (req, res) => {
 
     const decoded = jwt.verify(token, "techrescue_secret_key");
     const email = decoded.email;
-
+console.log("CLIENT EMAIL:", email);
     const { data: queries, error } = await supabase
       .from("queries")
       .select("*")
       .eq("client_email", email);
+
+     console.log("QUERIES FOUND:", queries);
 
     if (error) throw error;
 
