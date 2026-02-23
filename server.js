@@ -104,16 +104,15 @@ app.post("/signup", async (req, res) => {
 ========================= */
 app.post("/save-profile", async (req, res) => {
   try {
-    console.log("PROFILE DATA =>", req.body);
 
-    // 🔐 Token verify
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       return res.status(401).json({ error: "No token provided" });
     }
 
     const token = authHeader.split(" ")[1];
-const email = req.body.email;
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+    const email = decoded.email;   // ✅ email from JWT
 
     const {
       categories,
@@ -125,59 +124,28 @@ const email = req.body.email;
       summary
     } = req.body;
 
-    // 🔎 Check if profile already exists
-    const { data: existingProfile } = await supabase
+    const { error } = await supabase
       .from("engineer_profiles")
-      .select("*")
-      .eq("email", email)
-      .single();
+      .upsert([{
+        email,
+        categories,
+        subskills,
+        manual_skills: manualSkills,
+        role,
+        experience,
+        education,
+        summary
+      }], { onConflict: "email" });
 
-    if (existingProfile) {
-      // 🔁 UPDATE
-      const { error } = await supabase
-        .from("engineer_profiles")
-        .update({
-          categories,
-          subskills,
-          manual_skills: manualSkills,
-          role,
-          experience,
-          education,
-          summary
-        })
-        .eq("email", email);
+    if (error) throw error;
 
-      if (error) throw error;
-
-      return res.json({ status: "updated" });
-    } else {
-      // ➕ INSERT
-      const { error } = await supabase
-        .from("engineer_profiles")
-        .insert([
-          {
-            email,
-            categories,
-            subskills,
-            manual_skills: manualSkills,
-            role,
-            experience,
-            education,
-            summary
-          }
-        ]);
-
-      if (error) throw error;
-
-      return res.json({ status: "created" });
-    }
+    res.json({ status: "success" });
 
   } catch (err) {
     console.error("SAVE PROFILE ERROR:", err);
     res.status(500).json({ error: "Failed to save profile" });
   }
 });
-
 /* =========================
    LOGIN
 ========================= */
@@ -237,7 +205,7 @@ app.get("/me", async (req, res) => {
     const { data: user, error } = await supabase
       .from("engineers")
       .select("id, first_name, last_name, email, online")
-      .eq("id", decoded.id)
+      .eq("id", decoded.id
       .maybeSingle();
 
     if (error) throw error;
