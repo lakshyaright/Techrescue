@@ -187,6 +187,14 @@ if(!token){
   window.location.href = "Login.html";
 }
 
+const token = localStorage.getItem("token");
+
+const res = await fetch("https://techrescue.onrender.com/client-dashboard", {
+  headers: {
+    "Authorization": "Bearer " + token
+  }
+});
+    
 async function loadClientDashboard(){
 
   const res = await fetch(
@@ -266,6 +274,7 @@ loadClientDashboard();
 
 </body>
 </html>
+
 
 
 
