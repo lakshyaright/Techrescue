@@ -39,7 +39,6 @@ Create Your Account
 <input type="email" id="email" placeholder="Email ID" class="w-full border rounded-lg p-2" required>
 <input type="password" id="password" placeholder="Password" class="w-full border rounded-lg p-2" required>
 
-<!-- EXPERT ONLY FIELDS -->
 <div id="expertFields" class="space-y-4 hidden">
 <select id="country" class="w-full border rounded-lg p-2">
 <option value="">Select Country</option>
@@ -71,7 +70,6 @@ Create Account
 
 <script>
 
-// ROLE SWITCH LOGIC
 const clientTab = document.getElementById("clientTab");
 const expertTab = document.getElementById("expertTab");
 const roleInput = document.getElementById("role");
@@ -93,7 +91,6 @@ expertTab.onclick = () => {
     expertFields.classList.remove("hidden");
 };
 
-// SIGNUP SUBMIT
 document.getElementById("signupForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
@@ -120,12 +117,22 @@ document.getElementById("signupForm").addEventListener("submit", async function(
         const result = await res.json();
 
         if (res.ok) {
+
+            // 🔥 SAVE TOKEN
+            localStorage.setItem("token", result.token);
+
             messageBox.innerHTML =
                 '<span class="text-green-600">🎉 Account created successfully!</span>';
 
             setTimeout(() => {
-                window.location.href = "Login.html";
-            }, 1500);
+
+                if (result.role === "expert") {
+                    window.location.href = "profile-builder.html";
+                } else {
+                    window.location.href = "client.html";
+                }
+
+            }, 1000);
 
         } else {
             messageBox.innerHTML =
