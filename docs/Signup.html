@@ -123,9 +123,22 @@ document.getElementById("signupForm").addEventListener("submit", async function(
             messageBox.innerHTML =
                 '<span class="text-green-600">🎉 Account created successfully!</span>';
 
-            setTimeout(() => {
-                window.location.href = "Login.html";
-            }, 1500);
+if (res.ok) {
+
+    messageBox.innerHTML =
+        '<span class="text-green-600">🎉 Account created successfully!</span>';
+
+    setTimeout(() => {
+
+        if (role === "expert") {
+            window.location.href = "profile-builder.html";
+        } else {
+            window.location.href = "Login.html";
+        }
+
+    }, 1000);
+
+}
 
         } else {
             messageBox.innerHTML =
@@ -142,3 +155,4 @@ document.getElementById("signupForm").addEventListener("submit", async function(
 
 </body>
 </html>
+
