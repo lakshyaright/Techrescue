@@ -155,7 +155,8 @@ class="w-full border p-2 rounded"></textarea>
 
 </div>
 
-<script>
+  <script>
+
 function next(step){
   for(let i=1;i<=7;i++){
     document.getElementById("step"+i).classList.add("hidden");
@@ -163,8 +164,6 @@ function next(step){
   document.getElementById("step"+step).classList.remove("hidden");
 }
 
-
-<script>
 document.getElementById("profileForm").addEventListener("submit", async function(e){
   e.preventDefault();
 
@@ -193,7 +192,7 @@ document.getElementById("profileForm").addEventListener("submit", async function
       method:"POST",
       headers:{ 
         "Content-Type":"application/json",
-        "Authorization":"Bearer "+token   // 🔥 IMPORTANT
+        "Authorization":"Bearer "+token
       },
       body: JSON.stringify(data)
     });
@@ -213,6 +212,7 @@ document.getElementById("profileForm").addEventListener("submit", async function
     document.getElementById("msg").innerText = "❌ Server error";
   }
 });
+
 </script>
 
 </body>
