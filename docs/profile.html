@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
 
 <style>
-/* SAME CSS STRUCTURE */
 body{
   margin:0;
   font-family:'Inter',Arial,sans-serif;
@@ -30,8 +29,6 @@ body{
 .sidebar nav li{margin-bottom:20px;}
 .sidebar nav a{text-decoration:none;color:#333;font-weight:500;}
 .sidebar nav a.active{color:#0066cc;}
-.sidebar .settings{margin-top:auto;}
-
 .main{flex:1;display:flex;flex-direction:column;}
 .topbar{
   background:#0066cc;
@@ -42,15 +39,14 @@ body{
   align-items:center;
 }
 .content{padding:20px;overflow-y:auto;}
-
 .form-box{
   background:#fff;
   padding:25px;
   border-radius:8px;
   box-shadow:0 1px 3px rgba(0,0,0,0.1);
-  max-width:600px;
+  max-width:700px;
 }
-.form-box input, .form-box textarea{
+.form-box input, .form-box textarea, .form-box select{
   width:100%;
   padding:10px;
   margin-bottom:15px;
@@ -74,12 +70,11 @@ body{
   <h2>TechRescue</h2>
   <nav>
     <ul>
-      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="Expert.html">Dashboard</a></li>
       <li><a href="alerts.html">Alerts</a></li>
       <li><a href="jobs.html">Jobs</a></li>
       <li><a href="messages.html">Messages</a></li>
       <li><a href="profile.html" class="active">Profile</a></li>
-    </ul>
       <li><a href="#" onclick="logout()">Logout</a></li>
     </ul>
   </nav>
@@ -88,34 +83,116 @@ body{
 <div class="main">
 
 <div class="topbar">
-  <div>My Profile</div>
+  <div>Complete Your Profile</div>
 </div>
 
 <div class="content">
 
 <div class="form-box">
-  <h3>Edit Profile</h3>
+  <h3>Engineer Profile</h3>
 
-  <input type="text" placeholder="First Name"/>
-  <input type="text" placeholder="Last Name"/>
-  <input type="text" placeholder="Role"/>
-  <input type="text" placeholder="Experience"/>
-  <textarea placeholder="Professional Summary"></textarea>
+  <!-- CATEGORY -->
+  <label>Skill Category</label>
+  <input type="text" id="categories" placeholder="Example: IT & Networking, Cloud"/>
 
-  <button>Save Changes</button>
+  <!-- SUBSKILLS -->
+  <label>Sub Skills</label>
+  <input type="text" id="subskills" placeholder="Windows Server, Networking"/>
+
+  <!-- ROLE -->
+  <label>Role Type</label>
+  <select id="role">
+    <option value="">Select Role</option>
+    <option value="Field Engineer">Field Engineer</option>
+    <option value="Server Engineer">Server Engineer</option>
+    <option value="Cloud Engineer">Cloud Engineer</option>
+    <option value="Network Engineer">Network Engineer</option>
+  </select>
+
+  <!-- EXPERIENCE -->
+  <input type="text" id="experience" placeholder="Experience"/>
+
+  <!-- EDUCATION -->
+  <input type="text" id="education" placeholder="Education"/>
+
+  <!-- SUMMARY -->
+  <textarea id="summary" placeholder="Professional Summary"></textarea>
+
+  <button onclick="saveProfile()">Save Profile</button>
+
+  <p id="msg"></p>
+
 </div>
 
 </div>
 </div>
 
 <script>
+
 const token = localStorage.getItem("token");
-if(!token){window.location.href="Login.html";}
+if(!token){
+  window.location.href="Login.html";
+}
+
+// 🔥 LOAD PROFILE IF EXISTS
+async function loadProfile(){
+  const res = await fetch("https://techrescue.onrender.com/profile",{
+    headers:{
+      "Authorization":"Bearer "+token
+    }
+  });
+
+  if(res.ok){
+    const data = await res.json();
+    if(data){
+      document.getElementById("categories").value = (data.categories || []).join(",");
+      document.getElementById("subskills").value = (data.subskills || []).join(",");
+      document.getElementById("role").value = data.role || "";
+      document.getElementById("experience").value = data.experience || "";
+      document.getElementById("education").value = data.education || "";
+      document.getElementById("summary").value = data.summary || "";
+    }
+  }
+}
+
+loadProfile();
+
+// 🔥 SAVE PROFILE
+async function saveProfile(){
+
+  const data = {
+    categories: document.getElementById("categories").value.split(","),
+    subskills: document.getElementById("subskills").value.split(","),
+    manualSkills: "",
+    role: document.getElementById("role").value,
+    experience: document.getElementById("experience").value,
+    education: document.getElementById("education").value,
+    summary: document.getElementById("summary").value
+  };
+
+  const res = await fetch("https://techrescue.onrender.com/save-profile",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer "+token
+    },
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+
+  if(res.ok){
+    document.getElementById("msg").innerText = "✅ Profile Saved Successfully";
+  }else{
+    document.getElementById("msg").innerText = result.error || "❌ Failed";
+  }
+}
 
 function logout(){
   localStorage.removeItem("token");
   window.location.href="Login.html";
 }
+
 </script>
 
 </body>
