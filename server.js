@@ -113,9 +113,7 @@ app.post("/save-profile", async (req, res) => {
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, "techrescue_secret_key");
-
-    const email = decoded.email;
+const email = req.body.email;
 
     const {
       categories,
