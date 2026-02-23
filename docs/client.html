@@ -100,102 +100,16 @@ if (decoded.role !== "client") {
   </main>
 
   <!-- Data & Logic -->
-  <script>
-    // Mock data
-    const queries = [
-      { id: 101, title: 'Server downtime', status: 'Open',        date: '2025-07-01' },
-      { id: 102, title: 'VPN setup',      status: 'Resolved',    date: '2025-06-30' },
-      { id: 103, title: 'Firewall issue', status: 'In Progress', date: '2025-07-02' },
-      { id: 104, title: 'Printer error',  status: 'Open',        date: '2025-07-03' },
-      { id: 105, title: 'Cloud sync',     status: 'Resolved',    date: '2025-06-29' },
-      { id: 106, title: 'Network lag',    status: 'In Progress', date: '2025-07-01' },
-    ];
+<script>
 
-    // Count statuses
-    const counts = { total: 0, Open: 0, 'In Progress': 0, Resolved: 0 };
-    queries.forEach(q => {
-      counts.total++;
-      counts[q.status]++;
-    });
-
-    // Compute percentages
-    const pct = status => 
-      counts.total 
-        ? ((counts[status] / counts.total) * 100).toFixed(0) + '%' 
-        : '0%';
-
-    // Update metric cards
-    document.getElementById('totalCount').innerText      = counts.total;
-    document.getElementById('openCount').innerText       = counts.Open;
-    document.getElementById('inProgressCount').innerText = counts['In Progress'];
-    document.getElementById('resolvedCount').innerText   = counts.Resolved;
-
-    document.getElementById('totalPct').innerText      = '100%';
-    document.getElementById('openPct').innerText       = pct('Open');
-    document.getElementById('inProgressPct').innerText = pct('In Progress');
-    document.getElementById('resolvedPct').innerText   = pct('Resolved');
-
-    // Render Chart.js donut with percentage tooltips
-    const ctx = document.getElementById('overviewChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Open', 'In Progress', 'Resolved'],
-        datasets: [{ 
-          data: [counts.Open, counts['In Progress'], counts.Resolved],
-          backgroundColor: ['#FBBF24','#60A5FA','#34D399']
-        }]
-      },
-      options: {
-        cutout: '60%',
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: ctx => {
-                const idx = ctx.dataIndex;
-                const label = ctx.chart.data.labels[idx];
-                const value = ctx.dataset.data[idx];
-                const percentage = ((value / counts.total) * 100).toFixed(0) + '%';
-                return `${label}: ${value} (${percentage})`;
-              }
-            }
-          },
-          legend: { position: 'bottom' }
-        }
-      }
-    });
-
-    // Populate recent queries table
-    const tbody = document.getElementById('recentQueriesBody');
-    queries
-      .sort((a,b) => new Date(b.date) - new Date(a.date))
-      .slice(0,5)
-      .forEach(q => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="py-2 px-3 text-sm">${q.id}</td>
-          <td class="py-2 px-3 text-sm">${q.title}</td>
-          <td class="py-2 px-3 text-sm">${q.status}</td>
-          <td class="py-2 px-3 text-sm">${q.date}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-const token = localStorage.getItem("token");
-
-if(!token){
-  window.location.href = "Login.html";
-}
-
-const token = localStorage.getItem("token");
-
-const res = await fetch("https://techrescue.onrender.com/client-dashboard", {
-  headers: {
-    "Authorization": "Bearer " + token
-  }
-});
-    
 async function loadClientDashboard(){
+
+  const token = localStorage.getItem("token");
+
+  if(!token){
+    window.location.href = "Login.html";
+    return;
+  }
 
   const res = await fetch(
     "https://techrescue.onrender.com/client-dashboard",
@@ -209,7 +123,7 @@ async function loadClientDashboard(){
   const data = await res.json();
 
   if(!res.ok){
-    console.log("Dashboard error");
+    console.log("Dashboard error:", data);
     return;
   }
 
@@ -230,7 +144,6 @@ async function loadClientDashboard(){
     ((data.resolved/total)*100).toFixed(0)+"%";
 
   // Chart
- 
   const ctx = document.getElementById('overviewChart').getContext('2d');
 
   new Chart(ctx, {
@@ -269,11 +182,11 @@ async function loadClientDashboard(){
 
 loadClientDashboard();
 
-    
-  </script>
-
+</script>
+  
 </body>
 </html>
+
 
 
 
