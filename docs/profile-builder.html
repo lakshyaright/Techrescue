@@ -167,12 +167,12 @@ function next(step){
 document.getElementById("profileForm").addEventListener("submit", async function(e){
   e.preventDefault();
 
-  const token = localStorage.getItem("token");
+const email = localStorage.getItem("signupEmail");
 
-  if(!token){
-    window.location.href = "Login.html";
-    return;
-  }
+if(!email){
+  window.location.href = "Login.html";
+  return;
+}
 
   const categories = [...document.querySelectorAll('input[name="category"]:checked')].map(e=>e.value);
   const subskills = [...document.querySelectorAll('input[name="subskills"]:checked')].map(e=>e.value);
