@@ -70,12 +70,32 @@ class="w-full border p-2 rounded">
 </div>
 
 <!-- STEP 4 — ROLE -->
+<!-- STEP 4 — ROLE -->
 <div id="step4" class="hidden">
 
-<h3 class="font-semibold mb-3">Your Role</h3>
+<h3 class="font-semibold mb-3">Select Your Role Type</h3>
 
-<input type="text" id="role" placeholder="Example: L2 Server Engineer"
-class="w-full border p-2 rounded">
+<select id="role" class="w-full border p-2 rounded">
+  <option value="">Select Role</option>
+<option value="Server Engineer">Server Engineer</option>
+<option value="Field Engineer">Field Engineer</option>
+<option value="Remote Engineer">Remote Engineer</option>
+<option value="Desktop Engineer">Desktop Engineer</option>
+<option value="Network Engineer">Network Engineer</option>
+<option value="Systems Administrator">Systems Administrator</option>
+<option value="Cloud Engineer">Cloud Engineer</option>
+<option value="Security Analyst">Security Analyst</option>
+<option value="Database Administrator">Database Administrator</option>
+<option value="DevOps Engineer">DevOps Engineer</option>
+<option value="Software Engineer">Software Engineer</option>
+<option value="Help Desk Technician">Help Desk Technician</option>
+<option value="IT Support Specialist">IT Support Specialist</option>
+<option value="Infrastructure Engineer">Infrastructure Engineer</option>
+<option value="Application Support Engineer">Application Support Engineer</option>
+<option value="Cybersecurity Specialist">Cybersecurity Specialist</option>
+<option value="Data Center Engineer">Data Center Engineer</option>
+
+</select>
 
 <div class="mt-4 flex justify-between">
 <button type="button" onclick="next(3)" class="text-gray-500">Back</button>
