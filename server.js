@@ -238,7 +238,7 @@ app.get("/me", async (req, res) => {
     const { data: user, error } = await supabase
       .from("engineers")
       .select("id, first_name, last_name, email, online")
-      .eq("id", decoded.id
+      .eq("id", decoded.id)
       .maybeSingle();
 
     if (error) throw error;
