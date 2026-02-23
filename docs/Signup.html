@@ -39,7 +39,7 @@ Create Your Account
 <input type="email" id="email" placeholder="Email ID" class="w-full border rounded-lg p-2" required>
 <input type="password" id="password" placeholder="Password" class="w-full border rounded-lg p-2" required>
 
-<!-- Expert Only Fields -->
+<!-- EXPERT ONLY FIELDS -->
 <div id="expertFields" class="space-y-4 hidden">
 <select id="country" class="w-full border rounded-lg p-2">
 <option value="">Select Country</option>
@@ -71,37 +71,29 @@ Create Account
 
 <script>
 
-// Elements
+// ROLE SWITCH LOGIC
 const clientTab = document.getElementById("clientTab");
 const expertTab = document.getElementById("expertTab");
 const roleInput = document.getElementById("role");
 const expertFields = document.getElementById("expertFields");
 
-// Default role = client
-roleInput.value = "client";
-
-// Role Switch
-clientTab.addEventListener("click", () => {
+clientTab.onclick = () => {
     roleInput.value = "client";
-
     clientTab.classList.add("bg-blue-600","text-white");
     expertTab.classList.remove("bg-blue-600","text-white");
     expertTab.classList.add("bg-gray-200");
-
     expertFields.classList.add("hidden");
-});
+};
 
-expertTab.addEventListener("click", () => {
+expertTab.onclick = () => {
     roleInput.value = "expert";
-
     expertTab.classList.add("bg-blue-600","text-white");
     clientTab.classList.remove("bg-blue-600","text-white");
     clientTab.classList.add("bg-gray-200");
-
     expertFields.classList.remove("hidden");
-});
+};
 
-// Signup Submit
+// SIGNUP SUBMIT
 document.getElementById("signupForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
@@ -109,9 +101,9 @@ document.getElementById("signupForm").addEventListener("submit", async function(
     const role = roleInput.value;
 
     const data = {
-        first_name: document.getElementById("firstName").value.trim(),
-        last_name: document.getElementById("lastName").value.trim(),
-        email: document.getElementById("email").value.trim().toLowerCase(),
+        first_name: document.getElementById("firstName").value,
+        last_name: document.getElementById("lastName").value,
+        email: document.getElementById("email").value,
         password: document.getElementById("password").value,
         country: role === "expert" ? document.getElementById("country").value : null,
         state: role === "expert" ? document.getElementById("state").value : null,
@@ -127,39 +119,17 @@ document.getElementById("signupForm").addEventListener("submit", async function(
 
         const result = await res.json();
 
-        console.log("Signup Response:", result); // 🔍 DEBUG
-
         if (res.ok) {
-
-            if (!result.token || !result.role) {
-                messageBox.innerHTML =
-                    '<span class="text-red-600">Unexpected server response</span>';
-                return;
-            }
-
-            // Save token
-            localStorage.setItem("token", result.token);
-
             messageBox.innerHTML =
                 '<span class="text-green-600">🎉 Account created successfully!</span>';
 
             setTimeout(() => {
-
-                if (result.role === "expert") {
-                    window.location.href = "profile-builder.html";
-                } 
-                else if (result.role === "client") {
-                    window.location.href = "client.html";
-                } 
-                else {
-                    window.location.href = "Login.html";
-                }
-
-            }, 1000);
+                window.location.href = "Login.html";
+            }, 1500);
 
         } else {
             messageBox.innerHTML =
-                '<span class="text-red-600">' + (result.error || "Signup failed") + '</span>';
+                '<span class="text-red-600">' + result.error + '</span>';
         }
 
     } catch (err) {
