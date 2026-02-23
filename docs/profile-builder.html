@@ -143,8 +143,17 @@ function next(step){
   document.getElementById("step"+step).classList.remove("hidden");
 }
 
+
+<script>
 document.getElementById("profileForm").addEventListener("submit", async function(e){
   e.preventDefault();
+
+  const token = localStorage.getItem("token");
+
+  if(!token){
+    window.location.href = "Login.html";
+    return;
+  }
 
   const categories = [...document.querySelectorAll('input[name="category"]:checked')].map(e=>e.value);
   const subskills = [...document.querySelectorAll('input[name="subskills"]:checked')].map(e=>e.value);
@@ -162,9 +171,14 @@ document.getElementById("profileForm").addEventListener("submit", async function
   try{
     const res = await fetch("https://techrescue.onrender.com/save-profile", {
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
+      headers:{ 
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+token   // 🔥 IMPORTANT
+      },
       body: JSON.stringify(data)
     });
+
+    const result = await res.json();
 
     if(res.ok){
       document.getElementById("msg").innerText = "✅ Profile Completed Successfully";
@@ -172,8 +186,9 @@ document.getElementById("profileForm").addEventListener("submit", async function
         window.location.href = "Expert.html";
       },1500);
     } else {
-      document.getElementById("msg").innerText = "❌ Failed to save profile";
+      document.getElementById("msg").innerText = result.error || "❌ Failed to save profile";
     }
+
   }catch(err){
     document.getElementById("msg").innerText = "❌ Server error";
   }
