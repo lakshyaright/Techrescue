@@ -120,22 +120,13 @@ document.getElementById("signupForm").addEventListener("submit", async function(
         const result = await res.json();
 
         if (res.ok) {
+
             messageBox.innerHTML =
                 '<span class="text-green-600">🎉 Account created successfully!</span>';
 
-if (res.ok) {
-
-    messageBox.innerHTML =
-        '<span class="text-green-600">🎉 Account created successfully!</span>';
-
-    setTimeout(() => {
-        } else {
-            window.location.href = "Login.html";
-        }
-
-    }, 1000);
-
-}
+            setTimeout(() => {
+                window.location.href = "Login.html";
+            }, 1000);
 
         } else {
             messageBox.innerHTML =
@@ -152,5 +143,6 @@ if (res.ok) {
 
 </body>
 </html>
+
 
 
