@@ -807,7 +807,7 @@ app.get("/expert-alerts", async (req, res) => {
     const { data, error } = await supabase
       .from("queries")
       .select("*")
-      .eq("status", "Open");
+      .eq("status", "open");
 
     if (error) throw error;
 
