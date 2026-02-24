@@ -245,10 +245,11 @@ checkProfile();
         <p style="color:#999;">(Chart placeholder - integrate chart.js or similar)</p>
       </div>
 
-      <div class="alerts">
-        <h3>New Alerts</h3>
-        <div class="alert">
-          <h4>Network Troubleshooting</h4>
+<div class="alerts">
+  <h3>New Alerts</h3>
+  <div id="alertsContainer">
+    <p>Loading alerts...</p>
+  <h4>Network Troubleshooting</h4>
           <p>Need urgent network troubleshooting for small business. <br><small>30 mins ago</small></p>
           <div class="actions">
             <button class="ignore">Ignore</button>
@@ -340,10 +341,90 @@ async function toggleStatus(){
     body: JSON.stringify({ online })
   });
 }
+
+async function loadAlerts() {
+  try {
+    const res = await fetch("https://techrescue.onrender.com/expert-alerts", {
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    });
+
+    const alerts = await res.json();
+    const container = document.getElementById("alertsContainer");
+
+    if (!alerts || alerts.length === 0) {
+      container.innerHTML = "<p>No new alerts</p>";
+      return;
+    }
+
+    container.innerHTML = "";
+
+    alerts.forEach(alert => {
+      container.innerHTML += `
+        <div class="alert">
+          <h4>${alert.title}</h4>
+          <p>
+            ${alert.description || "No description provided"}
+            <br>
+            <small>${new Date(alert.created_at).toLocaleString()}</small>
+          </p>
+          <div class="actions">
+            <button class="ignore" onclick="ignoreAlert(${alert.id})">Ignore</button>
+            <button class="respond" onclick="respondToAlert(${alert.id})">Respond</button>
+          </div>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.log("Alert Load Error:", err);
+  }
+}
+
+/* RESPOND */
+async function respondToAlert(queryId) {
+  await fetch("https://techrescue.onrender.com/update-query-status", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({
+      id: queryId,
+      status: "In Progress"
+    })
+  });
+
+  loadAlerts();
+}
+
+/* IGNORE */
+async function ignoreAlert(queryId) {
+  await fetch("https://techrescue.onrender.com/update-query-status", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({
+      id: queryId,
+      status: "Ignored"
+    })
+  });
+
+  loadAlerts();
+}
+
+/* AUTO REFRESH EVERY 5 SEC */
+setInterval(loadAlerts, 5000);
+loadAlerts();
+  
 </script>  
   
 </body>
 </html>
+
 
 
 
