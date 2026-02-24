@@ -343,22 +343,23 @@ async function loadAlerts() {
 
     container.innerHTML = "";
 
-    alerts.forEach(alert => {
-      container.innerHTML += `
-        <div class="alert">
-          <h4>${alert.title}</h4>
-          <p>
-            ${alert.description || "No description provided"}
-            <br>
-            <small>${new Date(alert.created_at).toLocaleString()}</small>
-          </p>
-          <div class="actions">
-            <button class="ignore" onclick="ignoreAlert(${alert.id})">Ignore</button>
-            <button class="respond" onclick="respondToAlert(${alert.id})">Respond</button>
-          </div>
-        </div>
-      `;
-    });
+alerts.forEach(alert => {
+  container.innerHTML += `
+    <div class="alert">
+      <h4>${alert.ticket_number}</h4>
+      <p>
+        <strong>${alert.short_description}</strong><br>
+        ${alert.detailed_description || ""}
+        <br>
+        Priority: ${alert.priority}
+      </p>
+      <div class="actions">
+        <button class="ignore" onclick="ignoreAlert('${alert.ticket_number}')">Ignore</button>
+        <button class="respond" onclick="respondToAlert('${alert.ticket_number}')">Respond</button>
+      </div>
+    </div>
+  `;
+});
 
   } catch (err) {
     console.log("Alert Load Error:", err);
@@ -406,6 +407,7 @@ loadAlerts();
   
 </body>
 </html>
+
 
 
 
