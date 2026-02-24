@@ -385,7 +385,7 @@ async function respondToAlert(ticketNumber) {
   loadAlerts();
 }
 
-/* IGNORE */
+/* IGNORE 
 async function ignoreAlert(ticketNumber) {
   await fetch("https://techrescue.onrender.com/update-query-status", {
     method: "POST",
@@ -400,7 +400,7 @@ async function ignoreAlert(ticketNumber) {
   });
 
   loadAlerts();
-}
+}    */
 /* AUTO REFRESH EVERY 5 SEC */
 setInterval(loadAlerts, 5000);
 loadAlerts();
@@ -409,6 +409,7 @@ loadAlerts();
   
 </body>
 </html>
+
 
 
 
