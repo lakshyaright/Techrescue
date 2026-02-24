@@ -157,14 +157,15 @@
 
 <script>
 
+const token = localStorage.getItem("token");
+
 if (!token) {
   window.location.href = "Login.html";
-}
-
-const decoded = JSON.parse(atob(token.split(".")[1]));
-
-if (decoded.role !== "expert") {
-  window.location.href = "Login.html";
+} else {
+  const decoded = JSON.parse(atob(token.split(".")[1]));
+  if (decoded.role !== "expert") {
+    window.location.href = "Login.html";
+  }
 }
 
 async function checkProfile(){
@@ -408,6 +409,7 @@ loadAlerts();
   
 </body>
 </html>
+
 
 
 
