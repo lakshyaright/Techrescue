@@ -897,6 +897,35 @@ app.post("/accept-ticket", async (req, res) => {
 });
 
 /* =========================
+   ENGINEER ALERT TAB DATA
+========================= */
+app.get("/engineer-alerts", async (req, res) => {
+  try {
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "No token" });
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { data, error } = await supabase
+      .from("queries")
+      .select("*")
+      .eq("assigned_engineer_id", decoded.id)
+      .in("status", ["in_progress", "resolved"])
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    res.json(data);
+
+  } catch (err) {
+    console.log("ENGINEER ALERT ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* =========================
    START SERVER
 ========================= */
 const PORT = process.env.PORT || 10000;
