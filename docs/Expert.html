@@ -383,7 +383,7 @@ async function loadAlerts() {
 }
 
 /* RESPOND */
-async function respondToAlert(queryId) {
+async function respondToAlert(ticketNumber) {
   await fetch("https://techrescue.onrender.com/update-query-status", {
     method: "POST",
     headers: {
@@ -391,8 +391,8 @@ async function respondToAlert(queryId) {
       "Authorization": "Bearer " + token
     },
     body: JSON.stringify({
-      id: queryId,
-      status: "In Progress"
+      ticket_number: ticketNumber,
+      status: "in_progress"
     })
   });
 
@@ -400,7 +400,7 @@ async function respondToAlert(queryId) {
 }
 
 /* IGNORE */
-async function ignoreAlert(queryId) {
+async function ignoreAlert(ticketNumber) {
   await fetch("https://techrescue.onrender.com/update-query-status", {
     method: "POST",
     headers: {
@@ -408,14 +408,13 @@ async function ignoreAlert(queryId) {
       "Authorization": "Bearer " + token
     },
     body: JSON.stringify({
-      id: queryId,
-      status: "Ignored"
+      ticket_number: ticketNumber,
+      status: "ignored"
     })
   });
 
   loadAlerts();
 }
-
 /* AUTO REFRESH EVERY 5 SEC */
 setInterval(loadAlerts, 5000);
 loadAlerts();
@@ -424,6 +423,7 @@ loadAlerts();
   
 </body>
 </html>
+
 
 
 
