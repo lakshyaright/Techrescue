@@ -819,34 +819,17 @@ app.get("/expert-alerts", async (req, res) => {
 /* =========================
    UPDATE QUERY STATUS
 ========================= */
-app.post("/update-query-status", async (req, res) => {
-  try {
 
-    const { ticket_number, status } = req.body;
 
-    if (!ticket_number || !status) {
-      return res.status(400).json({ error: "Missing fields" });
-    }
 
-    const { error } = await supabase
-      .from("queries")
-      .update({ status })
-      .eq("ticket_number", ticket_number);
 
-    if (error) throw error;
 
-    res.json({ message: "Status updated successfully" });
 
-  } catch (err) {
-    console.log("UPDATE STATUS ERROR:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
+
 
 /* =========================
    ACCEPT TICKET (LOCK SYSTEM)
 ========================= */
-
 app.post("/accept-ticket", async (req, res) => {
   try {
 
@@ -864,17 +847,10 @@ app.post("/accept-ticket", async (req, res) => {
         accepted_at: new Date()
       })
       .eq("ticket_number", ticket_number)
-      .eq("status", "open")
-      .is("assigned_engineer_id", null)
       .select();
 
     if (error) throw error;
 
-    if (!data || data.length === 0) {
-      return res.status(400).json({ error: "Already accepted" });
-    }
-
-    // 🔥 Real-time broadcast
     io.emit("ticketUpdated", { ticket_number });
 
     res.json({ success: true });
