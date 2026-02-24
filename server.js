@@ -784,10 +784,8 @@ app.get("/query-history", async (req, res) => {
 });
 
 /* =========================
-   Get Live Alerts
+   Get Live Alerts (Only Unassigned Open Tickets)
 ========================= */
-
-
 app.get("/expert-alerts", async (req, res) => {
   try {
 
@@ -799,7 +797,6 @@ app.get("/expert-alerts", async (req, res) => {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, "techrescue_secret_key");
 
-    // Optional role check (keep if needed)
     if (decoded.role !== "expert") {
       return res.status(403).json({ error: "Unauthorized role" });
     }
@@ -807,7 +804,9 @@ app.get("/expert-alerts", async (req, res) => {
     const { data, error } = await supabase
       .from("queries")
       .select("*")
-      .eq("status", "open");
+      .eq("status", "open")
+      .is("assigned_engineer_id", null)   // 🔥 Important
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
 
