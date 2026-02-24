@@ -367,17 +367,19 @@ alerts.forEach(alert => {
 
 /* RESPOND */
 async function respondToAlert(ticketNumber) {
-  await fetch("https://techrescue.onrender.com/update-query-status", {
+  const res = await fetch("https://techrescue.onrender.com/accept-ticket", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer " + token
     },
     body: JSON.stringify({
-      ticket_number: ticketNumber,
-      status: "in_progress"
+      ticket_number: ticketNumber
     })
   });
+
+  const data = await res.json();
+  console.log(data);
 
   loadAlerts();
 }
@@ -406,6 +408,7 @@ loadAlerts();
   
 </body>
 </html>
+
 
 
 
