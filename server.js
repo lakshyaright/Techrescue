@@ -822,6 +822,17 @@ app.get("/expert-alerts", async (req, res) => {
   res.json(data);
 });
 
+app.post("/update-query-status", async (req, res) => {
+  const { id, status } = req.body;
+
+  await supabase
+    .from("queries")
+    .update({ status })
+    .eq("id", id);
+
+  res.json({ message: "Updated" });
+});
+
 /* =========================
    START SERVER
 ========================= */
