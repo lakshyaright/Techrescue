@@ -787,50 +787,36 @@ app.get("/query-history", async (req, res) => {
    Get Live Alerts
 ========================= */
 
+
 app.get("/expert-alerts", async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: "No token" });
+    }
+
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, "techrescue_secret_key");
 
+    // Optional role check (keep if needed)
     if (decoded.role !== "expert") {
-      return res.status(403).json({ error: "Unauthorized" });
+      return res.status(403).json({ error: "Unauthorized role" });
     }
 
     const { data, error } = await supabase
       .from("queries")
       .select("*")
-      .eq("status", "Open")
-      .order("created_at", { ascending: false });
+      .eq("status", "Open");
 
     if (error) throw error;
 
     res.json(data);
 
   } catch (err) {
-    res.status(500).json({ error: "Server Error" });
+    console.log("EXPERT ALERT ERROR:", err);
+    res.status(500).json({ error: err.message });
   }
-});
-
-
-app.get("/expert-alerts", async (req, res) => {
-  const { data } = await supabase
-    .from("queries")
-    .select("*")
-    .eq("status", "Open")
-    .order("created_at", { ascending: false });
-
-  res.json(data);
-});
-
-app.post("/update-query-status", async (req, res) => {
-  const { id, status } = req.body;
-
-  await supabase
-    .from("queries")
-    .update({ status })
-    .eq("id", id);
-
-  res.json({ message: "Updated" });
 });
 
 /* =========================
