@@ -6,6 +6,7 @@
 <title>Alerts - TechRescue</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 
 <style>
 body{
@@ -16,8 +17,6 @@ body{
   display:flex;
   height:100vh;
 }
-
-/* Sidebar */
 .sidebar{
   width:240px;
   background:#fff;
@@ -26,31 +25,12 @@ body{
   flex-direction:column;
   padding:20px;
 }
-.sidebar h2{
-  font-size:18px;
-  margin-bottom:30px;
-  color:#0066cc;
-}
-.sidebar nav ul{
-  list-style:none;
-  padding:0;
-  margin:0;
-  flex:1;
-}
+.sidebar h2{font-size:18px;margin-bottom:30px;color:#0066cc;}
+.sidebar nav ul{list-style:none;padding:0;margin:0;flex:1;}
 .sidebar nav li{margin-bottom:20px;}
-.sidebar nav a{
-  text-decoration:none;
-  color:#333;
-  font-weight:500;
-  display:flex;
-  justify-content:space-between;
-}
+.sidebar nav a{text-decoration:none;color:#333;font-weight:500;}
 .sidebar nav a.active{color:#0066cc;}
-.sidebar .settings{margin-top:auto;}
-
-/* Main */
 .main{flex:1;display:flex;flex-direction:column;}
-
 .topbar{
   background:#0066cc;
   color:#fff;
@@ -59,29 +39,9 @@ body{
   justify-content:space-between;
   align-items:center;
 }
+.content{padding:20px;overflow-y:auto;}
 
-.avatar{
-  background:#005bb5;
-  border-radius:50%;
-  width:35px;
-  height:35px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-weight:bold;
-}
-
-.content{
-  padding:20px;
-  overflow-y:auto;
-}
-
-/* Summary Cards */
-.summary{
-  display:flex;
-  gap:20px;
-  margin-bottom:20px;
-}
+.summary{display:flex;gap:20px;margin-bottom:20px;}
 .summary-card{
   flex:1;
   background:#fff;
@@ -93,7 +53,6 @@ body{
 .inprogress{border-top:4px solid #3b82f6;}
 .resolved{border-top:4px solid #10b981;}
 
-/* Alert Card */
 .alert-card{
   background:#fff3cd;
   border:1px solid #ffeeba;
@@ -101,25 +60,22 @@ body{
   border-radius:8px;
   margin-bottom:15px;
 }
-.alert-card h4{
-  margin:0 0 8px;
-  font-size:15px;
+.alert-actions button{
+  padding:6px 12px;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:12px;
+  margin-right:6px;
 }
-.alert-card p{
-  margin:0 0 8px;
-  font-size:14px;
-}
-.section-title{
-  margin-top:25px;
-  margin-bottom:10px;
-  font-weight:600;
-}
+.resolve{background:#10b981;color:#fff;}
+.chat{background:#0066cc;color:#fff;}
+.section-title{margin-top:25px;margin-bottom:10px;font-weight:600;}
 </style>
 </head>
 
 <body>
 
-<!-- Sidebar -->
 <div class="sidebar">
   <h2>TechRescue</h2>
   <nav>
@@ -129,27 +85,18 @@ body{
       <li><a href="jobs.html">Jobs</a></li>
       <li><a href="messages.html">Messages</a></li>
       <li><a href="profile.html">Profile</a></li>
-    </ul>
-    <ul class="settings">
       <li><a href="#" onclick="logout()">Logout</a></li>
     </ul>
   </nav>
 </div>
 
-<!-- Main -->
 <div class="main">
-
 <div class="topbar">
   <div>My Alerts</div>
-  <div style="display:flex;align-items:center;gap:15px;">
-    <div class="avatar" id="avatar">--</div>
-    <div id="userName">Loading...</div>
-  </div>
 </div>
 
 <div class="content">
 
-<!-- Summary -->
 <div class="summary">
   <div class="summary-card inprogress">
     <h2 id="inProgressCount">0</h2>
@@ -161,11 +108,9 @@ body{
   </div>
 </div>
 
-<!-- In Progress -->
 <div class="section-title">In Progress Tickets</div>
 <div id="inProgressList"></div>
 
-<!-- Resolved -->
 <div class="section-title">Resolved Tickets</div>
 <div id="resolvedList"></div>
 
@@ -174,9 +119,14 @@ body{
 
 <script>
 const token = localStorage.getItem("token");
-if(!token){
-  window.location.href="Login.html";
-}
+if(!token){ window.location.href="Login.html"; }
+
+const socket = io("https://techrescue.onrender.com");
+
+/* Real-time auto refresh */
+socket.on("ticketUpdated", ()=>{
+  loadEngineerAlerts();
+});
 
 /* Load Alerts */
 async function loadEngineerAlerts(){
@@ -203,6 +153,12 @@ async function loadEngineerAlerts(){
         <h4>${ticket.ticket_number}</h4>
         <p>${ticket.short_description}</p>
         <small>${new Date(ticket.created_at).toLocaleString()}</small>
+        <div class="alert-actions">
+          ${ticket.status==="in_progress" ? 
+            `<button class="resolve" onclick="resolveTicket('${ticket.ticket_number}')">Resolve</button>` 
+            : ``}
+          <button class="chat" onclick="openChat('${ticket.ticket_number}')">Chat</button>
+        </div>
       </div>
     `;
 
@@ -222,12 +178,37 @@ async function loadEngineerAlerts(){
   document.getElementById("resolvedCount").innerText=resolvedCount;
 }
 
-loadEngineerAlerts();
+/* Resolve Ticket */
+async function resolveTicket(ticketNumber){
+  const note = prompt("Enter resolution note:");
+  if(!note) return;
+
+  await fetch("https://techrescue.onrender.com/resolve-ticket",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer "+token
+    },
+    body: JSON.stringify({
+      ticket_number: ticketNumber,
+      resolution_note: note
+    })
+  });
+
+  loadEngineerAlerts();
+}
+
+/* Open Chat */
+function openChat(ticketNumber){
+  window.location.href="chat.html?ticket="+ticketNumber;
+}
 
 function logout(){
   localStorage.removeItem("token");
   window.location.href="Login.html";
 }
+
+loadEngineerAlerts();
 </script>
 
 </body>
