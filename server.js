@@ -820,6 +820,33 @@ app.get("/expert-alerts", async (req, res) => {
 });
 
 /* =========================
+   UPDATE QUERY STATUS
+========================= */
+app.post("/update-query-status", async (req, res) => {
+  try {
+
+    const { ticket_number, status } = req.body;
+
+    if (!ticket_number || !status) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
+    const { error } = await supabase
+      .from("queries")
+      .update({ status })
+      .eq("ticket_number", ticket_number);
+
+    if (error) throw error;
+
+    res.json({ message: "Status updated successfully" });
+
+  } catch (err) {
+    console.log("UPDATE STATUS ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* =========================
    START SERVER
 ========================= */
 const PORT = process.env.PORT || 10000;
