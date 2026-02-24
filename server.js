@@ -851,12 +851,21 @@ app.post("/update-query-status", async (req, res) => {
 app.post("/accept-ticket", async (req, res) => {
   try {
 
-    const token = req.headers.authorization.split(" ")[1];
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: "No token" });
+    }
+
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, "techrescue_secret_key");
 
     const { ticket_number } = req.body;
 
-    // 🔥 Atomic Lock
+    if (!ticket_number) {
+      return res.status(400).json({ error: "Ticket number required" });
+    }
+
+    // 🔥 Atomic Lock Condition
     const { data, error } = await supabase
       .from("queries")
       .update({
@@ -865,23 +874,24 @@ app.post("/accept-ticket", async (req, res) => {
         accepted_at: new Date()
       })
       .eq("ticket_number", ticket_number)
-      .eq("status", "open")
-      .is("assigned_engineer_id", null)
+      .eq("status", "open")                  // Must be open
+      .is("assigned_engineer_id", null)      // Must be unassigned
       .select();
 
     if (error) throw error;
 
+    // 🔥 If no row updated → someone else accepted
     if (!data.length) {
-      return res.status(400).json({ error: "Ticket already accepted" });
+      return res.status(400).json({ error: "Ticket already accepted by another engineer" });
     }
 
-    // 🔥 Emit realtime removal
-    io.emit("ticketAccepted", { ticket_number });
-
-    res.json({ message: "Ticket assigned successfully", ticket: data[0] });
+    res.json({
+      message: "Ticket accepted successfully",
+      ticket: data[0]
+    });
 
   } catch (err) {
-    console.log("ACCEPT ERROR:", err);
+    console.log("ACCEPT TICKET ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
