@@ -847,6 +847,47 @@ app.post("/update-query-status", async (req, res) => {
 });
 
 /* =========================
+   ACCEPT TICKET (LOCK SYSTEM)
+========================= */
+app.post("/accept-ticket", async (req, res) => {
+  try {
+
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { ticket_number } = req.body;
+
+    // 🔥 Atomic Lock
+    const { data, error } = await supabase
+      .from("queries")
+      .update({
+        status: "in_progress",
+        assigned_engineer_id: decoded.id,
+        accepted_at: new Date()
+      })
+      .eq("ticket_number", ticket_number)
+      .eq("status", "open")
+      .is("assigned_engineer_id", null)
+      .select();
+
+    if (error) throw error;
+
+    if (!data.length) {
+      return res.status(400).json({ error: "Ticket already accepted" });
+    }
+
+    // 🔥 Emit realtime removal
+    io.emit("ticketAccepted", { ticket_number });
+
+    res.json({ message: "Ticket assigned successfully", ticket: data[0] });
+
+  } catch (err) {
+    console.log("ACCEPT ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* =========================
    START SERVER
 ========================= */
 const PORT = process.env.PORT || 10000;
