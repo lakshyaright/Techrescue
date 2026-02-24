@@ -550,10 +550,19 @@ app.get("/dashboard-data", async (req, res) => {
 app.post("/raise-query", async (req, res) => {
   try {
 
-    const token = req.headers.authorization?.split(" ")[1];
-    const decoded = jwt.verify(token, "techrescue_secret_key");
-    const email = decoded.email;
+const token = req.headers.authorization?.split(" ")[1];
+if (!token) return res.status(401).json({ error: "No token" });
 
+const decoded = jwt.verify(token, "techrescue_secret_key");
+const authHeader = req.headers.authorization;
+if (!authHeader) {
+  return res.status(401).json({ error: "No token" });
+}
+
+const token = authHeader.split(" ")[1];
+const decoded = jwt.verify(token, "techrescue_secret_key");
+
+     
     const {
       category,
       subcategory,
