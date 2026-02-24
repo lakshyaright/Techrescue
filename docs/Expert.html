@@ -167,9 +167,10 @@ const decoded = JSON.parse(atob(token.split(".")[1]));
 if (decoded.role !== "expert") {
   window.location.href = "Login.html";
 }
+
 async function checkProfile(){
   const res = await fetch("https://techrescue.onrender.com/profile",{
-    headers:{ "Authorization":"Bearer "+token }
+    headers:{ "Authorization":"Bearer " + token }
   });
 
   const profile = await res.json();
@@ -181,7 +182,6 @@ async function checkProfile(){
 
 checkProfile();
 </script>
-
   
   <!-- Sidebar -->
   <div class="sidebar">
@@ -408,6 +408,7 @@ loadAlerts();
   
 </body>
 </html>
+
 
 
 
