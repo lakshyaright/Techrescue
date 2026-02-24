@@ -811,6 +811,17 @@ app.get("/expert-alerts", async (req, res) => {
   }
 });
 
+
+app.get("/expert-alerts", async (req, res) => {
+  const { data } = await supabase
+    .from("queries")
+    .select("*")
+    .eq("status", "Open")
+    .order("created_at", { ascending: false });
+
+  res.json(data);
+});
+
 /* =========================
    START SERVER
 ========================= */
