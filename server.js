@@ -715,9 +715,7 @@ app.get("/experts", async (req, res) => {
   }
 });
 
-   /* =========================
-      GET FIELD ENGINEERS
-   ========================= */
+
    /* =========================
    GET FIELD ENGINEERS
 ========================= */
@@ -848,24 +846,16 @@ app.post("/update-query-status", async (req, res) => {
 /* =========================
    ACCEPT TICKET (LOCK SYSTEM)
 ========================= */
+
 app.post("/accept-ticket", async (req, res) => {
   try {
 
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: "No token" });
-    }
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "No token" });
 
-    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, "techrescue_secret_key");
-
     const { ticket_number } = req.body;
 
-    if (!ticket_number) {
-      return res.status(400).json({ error: "Ticket number required" });
-    }
-
-    // 🔥 Atomic Lock Condition
     const { data, error } = await supabase
       .from("queries")
       .update({
@@ -874,30 +864,29 @@ app.post("/accept-ticket", async (req, res) => {
         accepted_at: new Date()
       })
       .eq("ticket_number", ticket_number)
-      .eq("status", "open")                  // Must be open
-      .is("assigned_engineer_id", null)      // Must be unassigned
+      .eq("status", "open")
+      .is("assigned_engineer_id", null)
       .select();
 
     if (error) throw error;
 
-    // 🔥 If no row updated → someone else accepted
-    if (!data.length) {
-      return res.status(400).json({ error: "Ticket already accepted by another engineer" });
+    if (!data || data.length === 0) {
+      return res.status(400).json({ error: "Already accepted" });
     }
 
-    res.json({
-      message: "Ticket accepted successfully",
-      ticket: data[0]
-    });
+    // 🔥 Real-time broadcast
+    io.emit("ticketUpdated", { ticket_number });
+
+    res.json({ success: true });
 
   } catch (err) {
-    console.log("ACCEPT TICKET ERROR:", err);
+    console.log("ACCEPT ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
 /* =========================
-   ENGINEER ALERT TAB DATA
+   ENGINEER ALERT TAB DATA (FINAL SAFE VERSION)
 ========================= */
 app.get("/engineer-alerts", async (req, res) => {
   try {
@@ -908,19 +897,57 @@ app.get("/engineer-alerts", async (req, res) => {
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, "techrescue_secret_key");
 
+    console.log("Engineer ID:", decoded.id);
+
     const { data, error } = await supabase
       .from("queries")
       .select("*")
-      .eq("assigned_engineer_id", decoded.id)
+      .filter("assigned_engineer_id", "eq", decoded.id)
       .in("status", ["in_progress", "resolved"])
       .order("created_at", { ascending: false });
 
     if (error) throw error;
 
+    console.log("Engineer Alerts Data:", data);
+
     res.json(data);
 
   } catch (err) {
     console.log("ENGINEER ALERT ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+/* =========================
+   RESOLVE TICKET
+========================= */
+app.post("/resolve-ticket", async (req, res) => {
+  try {
+
+    const token = req.headers.authorization?.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { ticket_number, resolution_note } = req.body;
+
+    const { error } = await supabase
+      .from("queries")
+      .update({
+        status: "resolved",
+        resolution_note,
+        resolved_at: new Date()
+      })
+      .eq("ticket_number", ticket_number)
+      .eq("assigned_engineer_id", decoded.id);
+
+    if (error) throw error;
+
+    io.emit("ticketUpdated", { ticket_number });
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("RESOLVE ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
