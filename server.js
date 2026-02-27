@@ -547,18 +547,19 @@ app.get("/dashboard-data", async (req, res) => {
    /* =========================
    RAISE QUERY (PRO LEVEL)
 ========================= */
+
 app.post("/raise-query", async (req, res) => {
   try {
 
-const token = req.headers.authorization?.split(" ")[1];
-if (!token) return res.status(401).json({ error: "No token" });
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: "No token provided" });
+    }
 
-const decoded = jwt.verify(token, "techrescue_secret_key");
-const authHeader = req.headers.authorization;
-if (!authHeader) {
-  return res.status(401).json({ error: "No token" });
-}
-    
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+    const email = decoded.email;
+
     const {
       category,
       subcategory,
@@ -569,14 +570,12 @@ if (!authHeader) {
       assignment_group
     } = req.body;
 
-    // 🔥 Priority Logic
     let priority = "P4";
 
     if (impact === "Organization" && urgency === "High") priority = "P1";
     else if (impact === "Multiple Users" && urgency === "High") priority = "P2";
     else if (impact === "Single User" && urgency === "Medium") priority = "P3";
 
-    // 🔥 Generate Ticket Number
     const ticketNumber = "INC" + Date.now();
 
     const { error } = await supabase
@@ -592,7 +591,8 @@ if (!authHeader) {
           priority,
           short_description,
           detailed_description,
-          assignment_group
+          assignment_group,
+          status: "open"   // 🔥 ADD THIS
         }
       ]);
 
@@ -604,8 +604,8 @@ if (!authHeader) {
     });
 
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Failed to create ticket" });
+    console.error("RAISE QUERY ERROR:", err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
