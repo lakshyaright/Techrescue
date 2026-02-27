@@ -297,18 +297,25 @@ app.get("/messages", async (req, res) => {
 ========================= */
 app.get("/profile", async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    const authHeader = req.headers.authorization;
+    if (!authHeader)
+      return res.status(401).json({ error: "No token" });
+
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, "techrescue_secret_key");
 
     const { data, error } = await supabase
       .from("engineer_profiles")
       .select("*")
-      .eq("engineer_id", decoded.id)
+      .eq("email", decoded.email)
       .maybeSingle();
 
     if (error) throw error;
+
     res.json(data);
-  } catch {
+
+  } catch (err) {
+    console.error("PROFILE ERROR:", err);
     res.status(401).json({ error: "Unauthorized" });
   }
 });
