@@ -955,6 +955,38 @@ app.post("/resolve-ticket", async (req, res) => {
   }
 });
 
+
+/* =========================
+   UPDATE QUERY STATUS
+========================= */
+app.post("/update-query-status", async (req, res) => {
+  try {
+
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "No token" });
+
+    const decoded = jwt.verify(token, "techrescue_secret_key");
+
+    const { ticket_number, status } = req.body;
+
+    const { error } = await supabase
+      .from("queries")
+      .update({ status })
+      .eq("ticket_number", ticket_number)
+      .eq("assigned_engineer_id", decoded.id);
+
+    if (error) throw error;
+
+    io.emit("ticketUpdated", { ticket_number });
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("UPDATE STATUS ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 /* =========================
    START SERVER
 ========================= */
