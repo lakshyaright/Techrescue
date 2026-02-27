@@ -838,17 +838,22 @@ app.post("/accept-ticket", async (req, res) => {
     const decoded = jwt.verify(token, "techrescue_secret_key");
     const { ticket_number } = req.body;
 
-    const { data, error } = await supabase
+    console.log("Engineer:", decoded.id);
+    console.log("Ticket:", ticket_number);
+
+    const { error } = await supabase
       .from("queries")
       .update({
         status: "in_progress",
-        assigned_engineer_id: decoded.id,
-        accepted_at: new Date()
+        assigned_engineer_id: decoded.id
       })
       .eq("ticket_number", ticket_number)
-      .select();
+      .is("assigned_engineer_id", null); // 🔥 prevent double accept
 
-    if (error) throw error;
+    if (error) {
+      console.log("DB ERROR:", error);
+      return res.status(500).json({ error: error.message });
+    }
 
     io.emit("ticketUpdated", { ticket_number });
 
