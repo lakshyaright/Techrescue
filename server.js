@@ -226,7 +226,7 @@ app.get("/me", async (req, res) => {
 
 app.get("/alerts", async (req, res) => {
   const { data, error } = await supabase
-    .from("alerts")
+    .from("queries")
     .select("*")
     .order("created_at", { ascending: false });
 
