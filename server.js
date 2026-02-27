@@ -942,15 +942,12 @@ app.post("/update-query-status", async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(401).json({ error: "No token" });
 
-    const decoded = jwt.verify(token, "techrescue_secret_key");
-
     const { ticket_number, status } = req.body;
 
     const { error } = await supabase
       .from("queries")
       .update({ status })
-      .eq("ticket_number", ticket_number)
-      .eq("assigned_engineer_id", decoded.id);
+      .eq("ticket_number", ticket_number); // 🔥 remove engineer condition
 
     if (error) throw error;
 
