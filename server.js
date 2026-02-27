@@ -220,34 +220,6 @@ app.get("/me", async (req, res) => {
   }
 });
 
-/* =========================
-   GET TICKET ALERTS
-========================= */
-
-app.get("/expert-alerts", async (req, res) => {
-  try {
-
-    const authHeader = req.headers.authorization;
-    if (!authHeader)
-      return res.status(401).json({ error: "No token" });
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, "techrescue_secret_key");
-
-    const { data, error } = await supabase
-      .from("queries")
-      .select("*")
-      .eq("status", "open")
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-
-    res.json(data);
-
-  } catch (err) {
-    res.status(500).json({ error: "Failed to load alerts" });
-  }
-});
 
 /* =========================
    GET JOBS (Logged User Only)
